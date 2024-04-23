@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+/opt/app/scripts/update_cert.sh
+/opt/app/scripts/mongo.sh --eval "db.rotateCertificates()"

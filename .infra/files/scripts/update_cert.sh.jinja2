@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+CERT_DIR="/opt/app/system/certbot/conf/live/{{dns_name}}"
+CERT_FILE="${CERT_DIR}/fullchain.pem"
+KEY_FILE="${CERT_DIR}/privkey.pem"
+
+cat "${CERT_FILE}" "${KEY_FILE}" > /mnt/data/mongodb.pem
+chmod 600 /mnt/data/mongodb.pem
+chown mongodb:mongodb /mnt/data/mongodb.pem

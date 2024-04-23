@@ -1,0 +1,12 @@
+---
+- name: "Create TLS file"
+  shell:
+    cmd: '/opt/app/scripts/update_cert.sh'
+
+- name: "Create Update TLS CRON"
+  ansible.builtin.cron:
+    name: "mongodb_tls"
+    minute: "0"
+    hour: "4"
+    job: "bash /opt/app/scripts/rotate_cert.sh >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'MongoDB Rotate Cert' -v $?"
+

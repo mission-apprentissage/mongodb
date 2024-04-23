@@ -1,0 +1,6 @@
+---
+- name: "Create users"
+  include_tasks: create_user.yml
+  loop: "{{vault[env_type].users}}"
+  loop_control:
+    loop_var: user
