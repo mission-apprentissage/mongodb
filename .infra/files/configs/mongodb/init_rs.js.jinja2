@@ -3,7 +3,10 @@ try {
     rs.status().ok
 } catch (e) { 
     if (e.code === 94) {
-        rs.initiate({});
+        rs.initiate({
+            host: "{{ dns_name }}",
+            priority: 5,
+        });
     } else {
         throw e;
     }

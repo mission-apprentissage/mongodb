@@ -1,4 +1,4 @@
 ---
 - name: "Initialisation du replicat set"
   shell:
-    cmd: '/opt/app/scripts/mongo.sh < /opt/app/configs/mongodb/init_rs.js'
+    cmd: '/opt/app/scripts/mongo_local.sh < /opt/app/configs/mongodb/init_rs.js'

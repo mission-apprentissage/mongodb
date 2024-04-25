@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly FILENAME=${1:?"Merci de préciser le nom du fichier de backup à restaurer"}
+shift
+
+readonly BACKUP_LOCAL_DIR="/opt/app/mongodb/backups"
+readonly BACKUP_FILE="${BACKUP_LOCAL_DIR}/${FILENAME}"
+
+function restore() {
+  echo "Creating backup..."
+  cat "$BACKUP_FILE" | bash "/opt/app/tools/gpg/decrypt.sh" | mongorestore --uri="mongodb+srv://backup:{{vault[env_type].backup}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true" --oplogReplay --gzip --drop --archive
+}
+
+function download(){
+  echo "Download backup from S3..."
+  mkdir -p "${BACKUP_LOCAL_DIR}"
+  aws s3 cp "s3://{{ dns_name }}-backups/${FILENAME}" "$BACKUP_FILE"
+}
+
+function delete(){
+  echo "Removing MongoDB backups..."
+  rm -f "${BACKUP_FILE}"
+}
+
+download
+restore
+delete

@@ -15,27 +15,3 @@
     name: mongodb-org
     state: present
     update_cache: yes
-
-- name: "Create configuration file"
-  ansible.builtin.template:
-    src:  "{{inventory_dir}}/files/mongod.conf.jinja2"
-    dest: "/etc/mongod.conf"
-    mode: "0600"
-    owner: mongodb
-  notify:
-    - Restart MongoDB
-
-- name: "Create keyfile"
-  ansible.builtin.template:
-    src:  "{{inventory_dir}}/files/keyfile.jinja2"
-    dest: "/mnt/data/keyfile"
-    mode: "0600"
-    owner: mongodb
-  notify:
-    - Restart MongoDB
-
-- name: "Start service"
-  ansible.builtin.service:
-    name: mongod
-    state: started
-    enabled: yes

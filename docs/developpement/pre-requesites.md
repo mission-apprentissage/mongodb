@@ -10,12 +10,6 @@ Afin de lancer le projet, il est nécessaire de s'assurer que tous les pré-requ
 
 Installez [Docker version 23.03.0+](https://docs.docker.com/engine/install/)
 
-## NodeJs
-
-Installez [Node Js20+](https://nodejs.org/en/download)
-
-> Vous pouvez utiliser [n](https://github.com/tj/n#third-party-installers) pour l'installer.
-
 ## Ansible
 
 Installez [Ansible 2.7+](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
@@ -25,10 +19,6 @@ Installez [Ansible 2.7+](https://docs.ansible.com/ansible/latest/installation_gu
 ## 1Password CLI
 
 [Suivre la documentation dédié](./1password.md)
-
-## Git LFS
-
-[Installez git-lfs](https://git-lfs.com/)
 
 ## Yq
 

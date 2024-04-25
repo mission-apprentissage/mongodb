@@ -5,52 +5,8 @@
   vars_files:
     - "../vault/vault.yml"
   tasks:
-    - name: Récupération des images docker
-      shell:
-        chdir: /opt/app
-        cmd: "sudo docker compose $(for file in $(ls docker-compose.*.yml); do echo -n \"-f $file \"; done) pull"
-
-    - name: Récupération du status de la stack
-      shell:
-        chdir: /opt/app
-        cmd: docker stack ls --format json
-      register: stack_status
-
-    - name: Lancement de l'application {{env_type}}
-      shell:
-        chdir: /opt/app
-        cmd: "/opt/app/tools/update-stack.sh"
-      register: docker_deploy_output
-
-    - debug:
-        var: docker_deploy_output
-
-    - name: Attente du deploiement
-      shell:
-        chdir: /opt/app
-        cmd: "/opt/app/tools/wait-deployment.sh"
-      async: 1800
-      poll: 10
-
-    - name: "Reload du Reverse Proxy"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/reload-proxy.sh"
-
-    - name: "Désactivation du mode maintenance"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"
-
-    - name: "Verification des certificats SSL"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{dns_name}}"
-
-    - name: "Prune Docker"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo docker system prune --all --force"
+    - name: "Installation de mongodb"
+      include_tasks: ./tasks/install_mongodb.yml
 
     - name: "Montage du volume"
       include_tasks: ./tasks/mount_volume.yml
@@ -58,17 +14,31 @@
     - name: "Copie des fichiers"
       include_tasks: ./tasks/files_copy.yml
 
+    - name: "Lancement des services systeme"
+      include_tasks: ./tasks/system.yml
+
     - name: "Installation des certificats TLS"
       include_tasks: ./tasks/install_tls.yml
 
-    - name: "Installation de mongodb"
-      include_tasks: ./tasks/install_mongodb.yml
+    - name: "Démarrage de mongodb"
+      include_tasks: ./tasks/start_mongodb.yml
+
+    - name: "Ajout du membre au replicat set"
+      ansible.builtin.shell:
+        cmd: "/opt/app/scripts/register_member.sh"
+      when: context == "new-member"
 
     - name: "Configuration du replicat set"
       include_tasks: ./tasks/config_replicat_set.yml
+      when: context == "new-cluster"
 
     - name: "Configuration des utilisateurs"
       include_tasks: ./tasks/create_users.yml
+      when: context == "new-cluster" or context == "update"
+    
+    - name: "Configuration de la sauvegarde de la base de données"
+      import_tasks: ./tasks/configure-mongodb-backup.yml
+      when: backup_enable | default(false) | bool
 
   handlers:
     - name: Restart MongoDB

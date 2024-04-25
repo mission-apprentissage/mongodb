@@ -1,265 +1,81 @@
-![](https://avatars1.githubusercontent.com/u/63645182?s=200&v=4)
+# MongoDB Cluster - Missing Apprentissage
 
-# Mission Apprentissage Template Repository
+Ce depot contient la configuration des différents cluster MongoDB de la Mission Apprentissage. 
 
-- [Mission Apprentissage Template Repository](#mission-apprentissage-template-repository)
-  - [Pré-requis](#pré-requis)
-  - [Démarrage](#démarrage)
-  - [Création du projet](#création-du-projet)
-    - [Sentry](#sentry)
-    - [MongoDB](#mongodb)
-    - [Postgres](#postgres)
-    - [Env Ini](#env-ini)
-    - [Mna Binary config](#mna-binary-config)
-    - [Secrets](#secrets)
-    - [UI Config](#ui-config)
-    - [Other Files](#other-files)
-    - [Mailpit](#mailpit)
-    - [Legal](#legal)
-    - [Remplacement du README.md](#remplacement-du-readmemd)
-    - [Seed](#seed)
-    - [Github Actions](#github-actions)
-    - [Organisation Secrets](#organisation-secrets)
-    - [Mettre à jour les snapshots](#mettre-à-jour-les-snapshots)
-    - [Infrastructure](#infrastructure)
-    - [Initial Version](#initial-version)
-    - [Monitoring](#monitoring)
-    - [GitGuardian](#gitguardian)
-    - [Github Settings](#github-settings)
-    - [Shodan](#shodan)
+## Architecture
 
-## Pré-requis
+Les clusters MongoDB sont composés d'un ou plus noeuds (serveur). Ils sont basés sur la configuration commune via [le dépot infra](https://github.com/mission-apprentissage/infra).
 
-[Suivre la documentation dédiée](./docs/developpement/pre-requesites.md)
+### Configuration des serveurs
 
-## Démarrage
+MongoDB est installé sur les serveurs via les packages officiels de MongoDB en natif.
 
-[Créez un nouveau repository en utilisant ce template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
+La configuration de MongoDB comprend:
+- La création des utilisateurs via le vault
+- La création du keyfile pour l'authentification des membres du cluster
+- La configuration du fichier de configuration de MongoDB avec:
+  - L'utilisation du keyfile pour l'authentification interne
+  - L'activation de l'authentification
+  - L'activation du mode replSet
+  - L'activation du mode TLS pour le chiffrement des connexions
+  - La sauvegarde des données sur un volume externe (/mnt/data)
+- Le montage du volume externe pour la sauvegarde des données
+- La création d'un CRON pour la rotation des certificats TLS
 
-Clonez le nouveau repository locallement.
+Pour plus de détails sur la configuration lié à MongoDB se référer à la [documentation de l'infrastructure](./docs/infrastructure.md).
 
-Récupérez manuellement les fichiers de git-lfs depuis le template
+En plus de MongoDB les serveurs ont un Docker Swarm pour le lancement des services système définis dans le dépot [infra](https://github.com/mission-apprentissage/infra):
+- un conteneur cadvisor pour la supervision des conteneurs
+- un conteneur node-exporter pour la supervision du système
+- un conteneur fluentd pour la collecte des logs
+- un conteneur reverse proxy pour l'accès aux métriques par le serveur de monitoring (cadvisor, node-exporter, fluentd-prometheus-exporter).
 
-```bash
-git lfs fetch https://github.com/mission-apprentissage/template-apprentissage.git
-git lfs pull
-```
+### Liste des clusters
+  
+| Nom du cluster | URL de connexion | Noeud #1 | Noeud #2 | Noeud #3 |
+| -------------- | ---------------- | -------- | -------- | -------- |
+| `mongodb-recette` | `mongodb+srv://<credentials>@mongodb-recette.apprentissage.beta.gouv.fr` | `mongodb-recette-1.apprentissage.beta.gouv.fr` | `n/a` | `n/a` |
 
-Récupérez le vault depuis 1password (assurez vous d'etre connecter via `op account get`)
+### Déploiement
 
-```bash
-.bin/mna vault:init
-```
+Le déploiement des clusters est fait via Ansible, mais certaines actions ne sont pas automatisées:
+- L'ajout du volume externe
+- Le formatage initial du volume externe
 
-Vérifiez que vous pouvez déchiffrer le vault via `gpg --list-packets .infra/vault/.vault-password.gpg`
+Pour déployer un cluster MongoDB, il est nécessaire de déployer chaque noeud individuellement. En fonction de la finalité recherchée il exiiste plusieurs cas de figure, avec chacun une procédure et documentation dédiée:
 
-> Si vous n'etes pas autorisé à déchiffrer le vault, il faudra se rapprocher des personnes habilitées afin d'avoir vos accès ajoutés.
+- [Créer un nouveau cluster](./docs/deploy/initial.md): Créer un nouveau cluster MongoDB.
+- [Ajouter un membre à un cluster existant](./docs/deploy/add_member.md): Ajouter un membre à un cluster existant.
+- [Mettre à jour d'un noeud existant](./docs/deploy/update.md): Mettre à jour un cluster existant (par exemple pour changer mettre à jour les utilisateurs).
 
-Initialisation de l'envrionnement `yarn setup`
+### Migration
 
-Vous pouvez lancer le projet locallement via `yarn dev`
+Pour migrer un cluster MongoDB existant vers la nouvelle architecture veuillez suivre la procédure [Migration](./docs/deploy/migration.md).
 
-Le setup va intialiser la base de donnée, il faut maintenant mettre à jour.
+### Backup et restauration
 
-Vous pouvez maintenant lancer l'application locallement en [suivant la documentation dédiée](./docs/developpement/developpement.md).
+Consulter les documentations dédiées à la [sauvegarde](./docs/backup/backup.md) et à la [restauration](./docs/backup/restore.md) des données.
 
-- TODO: GitGuardian, Shodan, Slack Webhook, Uptime
+### Suppression d'un noeud
 
-## Création du projet
+Pour supprimer un noeud veuillez:
+- Supprimer le noeud du cluster MongoDB via la commande `.bin/mna deploy:remove:node <environnement>-<n>`
+- Décommissionner le serveur et le volume externe associé.
+- Supprimer la référence du serveur dans le fichier ini de ce dépôt ainsi que celui du dépôt infra.
 
-**Pour une simplification de la procedure, nous allons supposer que vous souhaitez créer le produit nommé `api`**
+### Dépannage
 
-### Sentry
+Voici une liste des problèmes courants et des solutions associées:
+- [Augmenter le volume d'un noeud](./docs/troubleshooting/increase_volume.md): Augmenter la taille du volume d'un noeud.
+- [Perte d'un noeud](./docs/troubleshooting/lost_node.md): Procédure en cas de perte d'un noeud.
 
-Il faut créer 1 projet pour l'UI et un pour le Server sur https://sentry.apprentissage.beta.gouv.fr/organizations/sentry/projects/new/
+Vous pouvez également consulter ces pages de la documentation officielle de MongoDB:
 
-### MongoDB
+- [Adjust Priority for Replica Set Member](https://www.mongodb.com/docs/manual/tutorial/adjust-replica-set-member-priority/)
+- [Perform Maintenance on Replica Set Members](https://www.mongodb.com/docs/manual/tutorial/perform-maintence-on-replica-set-members/)
+- [Force a Member to Become Primary](https://www.mongodb.com/docs/manual/tutorial/force-member-to-be-primary/)
+- [Resync a Member of a Replica Set](https://www.mongodb.com/docs/manual/tutorial/resync-replica-set-member/)
 
-Créer 2 instances de MongoDB sur OVH pour recette & production.
+### Développement
 
-Pour chaque instance créer 2 utilisateurs:
-
-- `app` avec le role `dbOwner` sur `api`
-- `metabase` avec le role `read` sur `api`
-
-Ajouter l'IP de votre server dans les IPs autorisées
-
-### Postgres
-
-Créer 2 instances de Postgres sur OVH pour recette et production.
-
-Ajouter l'IP de votre server dans les IPs autorisées
-
-### Env Ini
-
-Mettre à jour le fichier `.infra/env.ini`
-
-- `product_name`: le nom du produit `api`
-- `repo_name`: le nom du repository `api-apprentissage`
-- `database_name`: le nom de la BDD `api`
-- `domain_name`: le nom du domaine `api`
-
-### Mna Binary config
-
-Mettre à jour le fichier `.bin/product-meta.sh` avec les memes valeurs que le fichier `.infra/env.ini`
-
-Mettre à jour le fichier `.bin/zsh-completion`, remplacer `mna-tmpl` par `mna-api`
-
-### Secrets
-
-Mise à jour du vault `yarn vault:edit`
-
-Mettre à jour les secrets suivants:
-
-- `SERVER_SENTRY_DSN`: le DSN du sentry serveur
-- `EMAIL`: addresse email utilisée pour envoyer des emails (créer un alias sur https://admin.alwaysdata.com/mailbox/). Utiliser une addresse de type `nepasrepondre-api@apprentissage.beta.gouv.fr`
-- `METABASE_EMAIL_FROM_ADDRESS`: Utiliser la meme que `EMAIL`
-- `METABASE_EMAIL_FROM_NAME`: Mettre à jour
-- `SEED_GPG_PASSPHRASE`: Générer un nouveau secret `pwgen -s 120 1`
-- `MONGODB_KEYFILE`: Générer un nouveau secret `pwgen -s 120 1`
-
-Pour chaque environnement:
-
-- `PUBLIC_URL`: Le nom de domaine public. Pour la preview utiliser le format prédéfini
-- `MONGODB_URI`: L'url de connexion de l'utilisateur `app`.
-  - Pour `recette` & `production` bien faire attention à la DB à utiliser dans la connection string et d'avoir `authSource=admin`
-  - Pour `preview` remplacer simplement la string `TODO_REPLACE_BY_MONGOKEYFILE` par la valeur `MONGODB_KEYFILE`
-- `MONGODB_METABASE_URI`: L'url de connexion de l'utilisateur `metabase`. Pour `preview` laisser vide car il n'y a pas de preview
-- `AUTH_USER_JWT_SECRET`: Générer un nouveau secret `pwgen -s 120 1`
-- `AUTH_PASSWORD_JWT_SECRET`: Générer un nouveau secret `pwgen -s 120 1`
-- `SESSION_SECRET`: Générer un nouveau secret `pwgen -s 120 1`
-- `SMTP_WEBHOOK_KEY`: Générer un nouveau secret `pwgen -s 64 1`
-- `METABASE_ADMIN_EMAIL`: L'addresse email du compte admin. Pour `preview` laisser vide car il n'y a pas de preview
-- `METABASE_ADMIN_PASS`: Générer un nouveau secret `pwgen -s -y 64 1`. Pour `preview` laisser vide car il n'y a pas de preview
-- `METABASE_DB_URI`: L'url de connexion à la Postgres.. Pour `preview` laisser vide car il n'y a pas de preview
-- `METABASE_ENCRYPTION_SECRET_KEY`: Générer un nouveau secret `pwgen -s 120 1`. Pour `preview` laisser vide car il n'y a pas de preview
-
-Pour recette & preview uniquement:
-
-- `SMTP_AUTH_USER`: `user`
-- `SMTP_AUTH_PASS`: Générer un nouveau secret `pwgen -s 120 1`, utilisez le **MÊME** password pour les deux environnements.
-
-### UI Config
-
-Mettre à jour le fichier `ui/config.public.ts`
-
-- `sentry.dsn`: le DSN du sentry ui
-- `host`: Pour chaque environnement mettre le domaine associé
-
-### Other Files
-
-- `.infra/files/configs/metabase/setup-metabase.sh`
-- `server/src/config.ts`: La valeur de `cookieName`
-- `server/.env.test`
-- `server/tests/globalSetup.ts`
-- `server/tests/routes/users.route.test.ts`
-- `shared/helpers/openapi/generateOpenapi.test.ts`
-- `shared/routes/core.routes.ts`
-- `ui/.env.test`
-
-### Mailpit
-
-Les environnements de recette & preview utilisent Mailpit. Il est nécessaire de créer le fichier d'authentification via la commande:
-
-```bash
-htpasswd -B .infra/files/configs/mailpit/auth user
-```
-
-Entrez le mot passe correpsondant à `SMTP_AUTH_PASS`.
-
-### Legal
-
-Revoir les pages:
-
-- `/`
-- `/accessibilite`
-- `/cgu`
-- `/donnees-personnelles`
-- `/mentions-legales`
-- `/politique-confidentialite`
-
-### Remplacement du README.md
-
-Remplacer le fichier `README.md` par `PROJECT_README.md`
-
-### Seed
-
-Le seed doit etre regénéré avec votre nouvelle passphrase. Pour cela faire `yarn seed:update`
-
-### Github Actions
-
-1. Décommenter les github actions `.github/workflows`
-2. Changer le nom des images docker dans `.github/workflows/release.yml` (`mna_tmpl_server` & `mna_tmpl_server`)
-3. Créer le Github Repository Secret `SLACK_WEBHOOK` (https://api.slack.com/apps/A01JENR8874)
-
-### Organisation Secrets
-
-Autorisez votre repository à accéder aux secrets d'organisation depuis https://github.com/organizations/mission-apprentissage/settings/secrets/actions
-
-- DEPLOY_PASS
-- DEPLOY_SSH_PRIVATE_KEY
-
-### Mettre à jour les snapshots
-
-`yarn test`
-
-### Infrastructure
-
-Demander à l'équipe transverse de provisionner les environnements https://github.com/mission-apprentissage/infra/blob/main/docs/provisionning.md
-
-> Une fois les environnements provisionnés et les accès défini veuillez mettre à jour le vault via `yarn vault:edit` puis refermer directement.
-
-Mettez à jour le fichier `.infra/env.ini` avec les IPs des différents serveurs.
-
-### Initial Version
-
-Une fois que les modification ci-dessus ont été réalisé, faites votre première PR et mergez la dans main.
-
-La version `1.0.0` de votre projet sera créé par la Github Action Release.
-
-### Monitoring
-
-Ajoutez votre projet dans le monitoring, pour cela vous référez à https://github.com/mission-apprentissage/monitoring/blob/main/README.md
-
-### GitGuardian
-
-Ajoutez votre projet sur Gitguardian https://dashboard.gitguardian.com/workspace/220324/settings/workspace/integrations/github
-
-### Github Settings
-
-- General:
-  - Features: `Issues` only
-  - Always suggest updating pull request branches: `on`
-  - Allow auto-merge: `on`
-  - Automatically delete head branches : `on`
-- Branches:
-  - `main` branch protection
-    - Require a pull request before merging:
-      - Require approvals: `on`
-    - Require status checks to pass before merging
-      - `tests / Tests`
-    - Require merge queue:
-      - Merge method: `Squash & merge`
-- Code security and analysis
-  - Private vulnerability reporting: `on`
-  - Dependency graph: `on`
-  - Dependabot:
-    - Dependabot alerts: `on`
-    - Dependabot security updates: `on`
-    - Grouped security updates: `on`
-  - Code scanning:
-    - CodeQL analysis: Setup Default
-  - Secret scanning: `on`
-    - Push protection: `on`
-
-### Shodan
-
-Créez un compte [Shodan](https://shodan.io) en tant que `Member`.
-
-Ajoutez la config Slack Webhook pour recevoir les alertes.
-
-Ajoutez vos urls à monitorer avec notification Slack:
-
-- <product_name>.apprentissage.beta.gouv.fr
-- <product_name>-recette.apprentissage.beta.gouv.fr
-- <product_name>-preview.apprentissage.beta.gouv.fr
+Voir la documentation dédiée au [développement](./docs/developpement/developpement.md)

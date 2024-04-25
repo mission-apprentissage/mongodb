@@ -37,3 +37,21 @@
     - item.path | regex_search('\.jinja2$') != none
     - item.path | basename != '.gitkeep'
     - item.path | basename != '.DS_Store'
+
+- name: "Create configuration file"
+  ansible.builtin.template:
+    src:  "{{inventory_dir}}/files/mongod.conf.jinja2"
+    dest: "/etc/mongod.conf"
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart MongoDB
+
+- name: "Create keyfile"
+  ansible.builtin.template:
+    src:  "{{inventory_dir}}/files/keyfile.jinja2"
+    dest: "/mnt/data/keyfile"
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart MongoDB
