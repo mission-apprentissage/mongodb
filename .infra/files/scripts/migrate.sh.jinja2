@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "MongoDB migration script"
+read -p "Does all services are stopped ? [y/N]: " response
+case $response in
+    [yY][eE][sS]|[yY])
+    ;;
+*)
+    exit 1
+;;
+esac
+
+read -p "Source MongoDB host: " sourceHost
+read -p "Source MongoDB backup username: " username
+read -p "Source MongoDB backup password: " password
+read -p "Name of the database to migrate: " dbName
+
+targetUri="mongodb+srv://root:{{vault[env_type].root}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true"
+
+SECONDS=0
+mongodump --ssl --host="${sourceHost}" --password="${password}" --username="${username}" --archive | mongorestore --archive --nsInclude="${dbName}.*" --uri="${targetUri}" --drop
+echo "Elapsed Time: $SECONDS seconds"

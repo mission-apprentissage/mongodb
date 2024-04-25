@@ -6,7 +6,10 @@ _mna_completion() {
   local -a commands=(
    "help:'Show help message'"
    "bin\:setup:'Installs mna-tmpl binary with zsh completion on system'"
-   "deploy:'Deploy application to <env>'"
+   "deploy\:initial\:node:'Création du nouveau cluster <env>'"
+   "deploy\:update\:node:'Mise à jour du noeud <env>'"
+   "deploy\:extra\:node:'Ajout du noeud à un cluster existant <env>'"
+   "deploy\:remove\:node:'Suppression du noeud <env>'"
    "vault\:init:'Fetch initial vault-password from template-apprentissage'"
    "vault\:edit:'Edit vault file'"
    "vault\:password:'Get vault password'"

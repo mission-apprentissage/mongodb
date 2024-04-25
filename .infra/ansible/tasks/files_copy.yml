@@ -19,66 +19,39 @@
   with_filetree: "{{inventory_dir}}/files"
   when:
     - item.state == 'file'
+    - item.path | regex_search('\.jinja2$') == none
     - item.path | basename != '.gitkeep'
     - item.path | basename != '.DS_Store'
-    # seed.gpg should not be template replaced
-    - item.path | basename != 'seed.gpg'
-    - item.path | basename != 'mongo_keyfile.txt'
-    - item.path | basename != 'seed.gz'
     # /app/tools is managed by infra
     - item.path | regex_search('^tools/?') == none
     - item.path | regex_search('^system/?') == none
 
-- name: Copie du fichier de seed
-  ansible.builtin.copy:
-    src: "{{inventory_dir}}/files/configs/mongodb/seed.gpg"
-    dest: "/opt/app/configs/mongodb/seed.gpg"
-    mode: "700"
-  when: env_type == 'preview'
-
-- name: Copie du fichier mongodb keyfile
+- name: Copie des template de l'arborescence /opt/app à partir de .infra/files
   ansible.builtin.template:
-    src: "{{inventory_dir}}/files/configs/mongodb/mongo_keyfile.txt"
-    dest: "/opt/app/configs/mongodb/mongo_keyfile.txt"
-    mode: "400"
-    owner: 999
-    group: 999
-  when: env_type == 'preview'
+    src: "{{ item.src }}"
+    dest: "/opt/app/{{ (item.path | splitext)[0] }}"
+    mode: "{{ item.mode }}"
+  with_filetree: "{{inventory_dir}}/files"
+  when:
+    - item.state == 'file'
+    - item.path | regex_search('\.jinja2$') != none
+    - item.path | basename != '.gitkeep'
+    - item.path | basename != '.DS_Store'
 
-- name: copy server env file
+- name: "Create configuration file"
   ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "/opt/app/.env_server"
-  with_fileglob:
-    - "{{inventory_dir}}/.env_server"
-  when: env_type != 'preview'
+    src:  "{{inventory_dir}}/files/mongod.conf.jinja2"
+    dest: "/etc/mongod.conf"
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart MongoDB
 
-- name: copy ui env file
+- name: "Create keyfile"
   ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "/opt/app/.env_ui"
-  with_fileglob:
-    - "{{inventory_dir}}/.env_ui"
-  when: env_type != 'preview'
-
-- name: copy du fichier docker compose
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "/opt/app/docker-compose.production.yml"
-  with_fileglob:
-    - "{{inventory_dir}}/docker-compose.production.yml"
-  when: env_type != 'preview'
-
-- name: copy du fichier recette docker compose
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "/opt/app/docker-compose.recette.yml"
-  with_fileglob:
-    - "{{inventory_dir}}/docker-compose.recette.yml"
-  when: env_type == 'recette'
-
-- name: creation du fichier docker compose preview system
-  ansible.builtin.template:
-    src: "{{inventory_dir}}/docker-compose.preview-system.yml"
-    dest: "/opt/app/docker-compose.preview-system.yml"
-  when: env_type == 'preview'
+    src:  "{{inventory_dir}}/files/keyfile.jinja2"
+    dest: "/mnt/data/keyfile"
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart MongoDB

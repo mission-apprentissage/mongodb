@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+aws s3 ls s3://{{ dns_name }}-backups/ --human-readable "$@"

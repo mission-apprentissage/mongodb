@@ -1,0 +1,22 @@
+net:
+  bindIpAll: true
+  tls:
+    mode: requireTLS
+    certificateKeyFile: /mnt/data/mongodb.pem
+    disabledProtocols: TLS1_0,TLS1_1
+    allowConnectionsWithoutCertificates: true
+
+setParameter:
+  tlsUseSystemCA: true
+
+security:
+  keyFile: /mnt/data/keyfile
+  authorization: enabled
+  
+storage:
+  dbPath: /mnt/data/db
+  directoryPerDB: true
+  oplogMinRetentionHours: 72
+  
+replication:
+  replSetName: rs-{{ env_type }}

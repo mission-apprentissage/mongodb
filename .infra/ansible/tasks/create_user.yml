@@ -1,0 +1,9 @@
+---
+- name: "Create user {{ user.name }}"
+  shell:
+    cmd: '/opt/app/scripts/mongo_local.sh < /opt/app/configs/mongodb/create_user.js'
+  environment:
+    USERNAME: "{{ user.name }}"
+    PASSWORD: "{{ user.password }}"
+    DATABASE: "{{ user.database }}"
+    ROLES: "{{ user.roles }}"

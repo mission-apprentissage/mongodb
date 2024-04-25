@@ -6,10 +6,13 @@ function Help() {
    # Display Help
    echo "Commands"
    echo "  bin:setup                                               Installs ${PRODUCT_NAME} binary with zsh completion on system"
-   echo "  deploy <env> --user <your_username>                                           Deploy application to <env>"
-   echo "  vault:init                                                                    Fetch initial vault-password from template-apprentissage"
-   echo "  vault:edit                                                                    Edit vault file"
-   echo "  vault:password                                                                Show vault password"
+   echo "  deploy:initial:node <env>                               Création d'un nouveau cluster <env>"
+   echo "  deploy:update:node <env>                                Mise à jour du noeud <env>"
+   echo "  deploy:extra:node <env>                                 Ajout du noeud à un cluster existant <env>"
+   echo "  deploy:remove:node <env>                                Suppression du noeud <env>"
+   echo "  vault:init                                              Fetch initial vault-password from template-apprentissage"
+   echo "  vault:edit                                              Edit vault file"
+   echo "  vault:password                                          Show vault password"
    echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
    echo "  deploy:log:dencrypt                        Decrypt Github ansible logs"
    echo 
@@ -24,8 +27,20 @@ function bin:setup() {
   sudo rm -f ~/.zcompdump*
 }
 
-function deploy() {
-  "${SCRIPT_DIR}/deploy-app.sh" "$@"
+function deploy:update:node() {
+  "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=update"
+}
+
+function deploy:initial:node() {
+  "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=new-cluster"
+}
+
+function deploy:extra:node() {
+  "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=new-member"
+}
+
+function deploy:remove:node() {
+  "${SCRIPT_DIR}/remove-node.sh" "$@"
 }
 
 function vault:init() {

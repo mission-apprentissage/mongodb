@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Connect to the replica set as root to register our new member
+mongosh "mongodb+srv://root:{{vault[env_type].root}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true" < /opt/app/configs/mongodb/register_member.js

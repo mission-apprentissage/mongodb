@@ -1,0 +1,10 @@
+// This script is used to self register as a member of a replica set
+const host = '{{dns_name}}:27017';
+const config = rs.conf();
+if (config.members.some(member => member.host === host)) {
+    exit();
+}
+rs.add({
+    host: host,
+    priority: 1,
+});

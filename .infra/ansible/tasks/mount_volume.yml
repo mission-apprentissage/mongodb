@@ -1,0 +1,18 @@
+---
+- name: "Create mount directory"
+  ansible.builtin.file:
+    path: "/mnt/data/db"
+    state: directory
+    mode: "0700"
+    owner: mongodb
+    recurse: yes
+
+- name: "Mount data volume"
+  ansible.posix.mount:
+    backup: true
+    boot: true
+    fstype: xfs
+    opts: "defaults,nofail,noatime,discard"
+    path: "/mnt/data"
+    src: "LABEL=MONGO_DATA"
+    state: mounted

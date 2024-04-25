@@ -1,0 +1,28 @@
+---
+- name: "Create users"
+  include_tasks: create_user.yml
+  loop: "{{vault[env_type].users}}"
+  loop_control:
+    loop_var: user
+
+- name: "Create custom roles"
+  shell:
+    cmd: "/opt/app/scripts/mongo.sh < /opt/app/configs/mongodb/create_roles.js"
+
+- name: "Create root user"
+  include_tasks: create_user.yml
+  vars:
+    user:
+      name: "root"
+      password: "{{vault[env_type].root}}"
+      database: "admin"
+      roles: "root"
+
+- name: "Create backup user"
+  include_tasks: create_user.yml
+  vars:
+    user:
+      name: "backup"
+      password: "{{vault[env_type].backup}}"
+      database: "admin"
+      roles: "any"

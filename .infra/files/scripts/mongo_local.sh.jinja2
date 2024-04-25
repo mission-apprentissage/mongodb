@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Connect to the local mongodb instance directly
+
+mongosh "mongodb://__system:{{vault[env_type].KEYFILE}}@{{dns_name}}:27017/?authSource=local&directConnection=true&tls=true" "$@"

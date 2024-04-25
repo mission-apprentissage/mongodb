@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false
+  vars_files:
+    - "../vault/vault.yml"
+  tasks:
+    - name: "Suppression du noeud"
+      ansible.builtin.shell:
+        cmd: "/opt/app/scripts/remove_member.sh"
+
+  handlers:
+    - name: Restart MongoDB
+      ansible.builtin.service:
+        name: mongod
+        state: restarted
+        enabled: yes
