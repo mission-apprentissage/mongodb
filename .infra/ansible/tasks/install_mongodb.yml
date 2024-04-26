@@ -15,3 +15,12 @@
     name: mongodb-org
     state: present
     update_cache: yes
+
+- name: "Setup numactl"
+  include_tasks: ./tweaks/numa.yml
+
+- name: "Setup ulimit"
+  include_tasks: ./tweaks/ulimit.yml
+
+- name: "Setup Network"
+  include_tasks: ./tweaks/network.yml

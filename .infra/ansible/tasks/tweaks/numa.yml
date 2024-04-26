@@ -1,0 +1,12 @@
+---
+# https://www.mongodb.com/docs/manual/administration/production-notes/#configuring-numa-on-linux
+- name: "Disable zone reclaim mode" 
+  ansible.posix.sysctl:
+      name: vm.zone_reclaim_mode
+      value: 0
+      state: present
+
+- name: "Install numactl"
+  apt:
+    name: numactl
+    state: present

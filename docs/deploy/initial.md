@@ -40,9 +40,8 @@ Avec:
 
 ### Déploiement
 
-Lancer le déploiement, soit: 
-- Manuellement via la commande `.bin/mna deploy:initial:node <environnement>-<n>`
-- Autamatisé via la Github Action `Inital Node Deployment` (pensez à commiter et pousser les changements avant).
+1. Lancer le déploiement `.bin/mna deploy:initial:node <environnement>-<n>`
+2. Redémarrer le serveur pour appliquer tous les changements
 
 ## Noeuds suivants
 

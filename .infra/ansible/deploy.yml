@@ -41,8 +41,18 @@
       when: backup_enable | default(false) | bool
 
   handlers:
+    - name: Reload Daemon
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
     - name: Restart MongoDB
       ansible.builtin.service:
         name: mongod
+        state: restarted
+        enabled: yes
+
+    - name: Restart THP
+      ansible.builtin.service:
+        name: disable-transparent-huge-pages
         state: restarted
         enabled: yes

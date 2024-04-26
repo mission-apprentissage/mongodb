@@ -1,0 +1,44 @@
+---
+# https://www.mongodb.com/docs/manual/reference/ulimit/#recommended-ulimit-settings
+- name: Configuration de ulimit file size
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: '-'
+    limit_item: 'fsize'
+    value: 'unlimited'
+
+- name: Configuration de ulimit cpu time
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: '-'
+    limit_item: 'cpu'
+    value: 'unlimited'
+
+- name: Configuration de ulimit virtual memory
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: '-'
+    limit_item: 'rss'
+    value: 'unlimited'
+
+- name: Configuration de ulimit locked-in-memory size
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: '-'
+    limit_item: 'memlock'
+    value: 'unlimited'
+
+- name: Configuration de ulimit open files
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: '-'
+    limit_item: 'nofile'
+    value: '64000'
+
+- name: Configuration de ulimit processes
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: '-'
+    limit_item: 'nproc'
+    value: '64000'
+

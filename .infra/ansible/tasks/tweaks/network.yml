@@ -1,0 +1,14 @@
+---
+# https://www.mongodb.com/docs/manual/administration/production-notes/#azure
+- name: Update tcp_keepalive_time
+  ansible.posix.sysctl:
+    name: net.ipv4.tcp_keepalive_time
+    value: 120
+    state: present
+
+# https://jira.mongodb.org/browse/SERVER-51233
+- name: Update tcp_keepalive_time
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: 128000
+    state: present
