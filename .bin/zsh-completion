@@ -1,4 +1,4 @@
-#compdef -d mna-tmpl
+#compdef -d mna-mongodb
 
 _mna_completion() {
   local curcontext="$curcontext" state line

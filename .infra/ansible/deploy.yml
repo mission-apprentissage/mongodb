@@ -40,6 +40,9 @@
       import_tasks: ./tasks/configure-mongodb-backup.yml
       when: backup_enable | default(false) | bool
 
+    - name: "Percona"
+      include_tasks: ./tasks/percona.yml
+
   handlers:
     - name: Reload Daemon
       ansible.builtin.systemd_service:

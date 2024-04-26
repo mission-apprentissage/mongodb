@@ -62,6 +62,7 @@ Pour supprimer un noeud veuillez:
 - Supprimer le noeud du cluster MongoDB via la commande `.bin/mna deploy:remove:node <environnement>-<n>`
 - Décommissionner le serveur et le volume externe associé.
 - Supprimer la référence du serveur dans le fichier ini de ce dépôt ainsi que celui du dépôt infra.
+- Supprimer le noeud de [Percona](https://percona.apprentissage.beta.gouv.fr)
 
 ### Dépannage
 

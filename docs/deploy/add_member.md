@@ -16,3 +16,7 @@ Veuillez lancer la commande `.bin/mna deploy:extra:node <environnement>-<n>` pou
 2. Passer en mode super utilisateur `sudo -i`
 3. Vérifiez le status du replica set avec la commande `/opt/app/scripts/mongo.sh --eval 'db.adminCommand({replSetGetStatus: 1})'`. Vous devriez voir le nouveau noeud, et attendre que le status soit `PRIMARY` ou `SECONDARY`, si le status est 'STARTUP2' vous pouvez obtenir une estimation du temps restant avec la valeur `initialSyncStatus`
 4. Redémarrer le serveur pour appliquer tous les changements
+
+### Monitoring
+
+Veuillez vous référer à la documentation sur [Monitoring](../monitoring.md) pour activer le monitoring du cluster.
