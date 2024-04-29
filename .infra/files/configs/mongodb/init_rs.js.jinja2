@@ -3,10 +3,14 @@ try {
     rs.status().ok
 } catch (e) { 
     if (e.code === 94) {
-        rs.initiate({
-            host: "{{ dns_name }}",
-            priority: 5,
-        });
+        rs.initiate();
+        while(rs.status().myState !== 1) {
+            print('Waiting for replica set initialization...');
+            sleep(1000);
+        }
+        cfg = rs.conf();
+        cfg.members[0].priority = 5;
+        rs.reconfig(cfg);
     } else {
         throw e;
     }
