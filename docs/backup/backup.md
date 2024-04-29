@@ -24,3 +24,9 @@ sudo -i
 ```bash
 /opt/app/scripts/backup-database.sh
 ```
+
+## Vérification des backups
+
+1. Connectez-vous au serveur via `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
+2. Passer en mode super utilisateur `sudo -i`
+3. Lancer la commande `/opt/app/scripts/list-backups.sh`

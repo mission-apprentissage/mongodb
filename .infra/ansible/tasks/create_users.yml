@@ -7,7 +7,13 @@
 
 - name: "Create custom roles"
   shell:
-    cmd: "/opt/app/scripts/mongo.sh < /opt/app/configs/mongodb/create_roles.js"
+    cmd: "/opt/app/scripts/mongo_local.sh /opt/app/configs/mongodb/create_roles.js"
+  when: context == "new-cluster"
+
+- name: "Create custom roles"
+  shell:
+    cmd: "/opt/app/scripts/mongo.sh /opt/app/configs/mongodb/create_roles.js"
+  when: context != "new-cluster"
 
 - name: "Create root user"
   include_tasks: create_user.yml
@@ -24,5 +30,14 @@
     user:
       name: "backup"
       password: "{{vault[env_type].backup}}"
+      database: "admin"
+      roles: "any"
+
+- name: "Create pmm user"
+  include_tasks: create_user.yml
+  vars:
+    user:
+      name: "pmm"
+      password: "{{vault[env_type].pmm}}"
       database: "admin"
       roles: "any"

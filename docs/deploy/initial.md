@@ -2,6 +2,15 @@
 
 Cette section décrit comment créer un nouveau cluster, pour un nouvel environnement.
 
+## Architecture Conseillée
+
+Pour un environnement de production, il est recommandé d'avoir une architecture similaire à celle-ci:
+- Un réseau privé dédié
+- Un cluster de base de données sur plusieurs régions (au moins 2)
+- Un cluster composé d'au moins 3 noeuds
+- Un noeud principal sur la meme région que l'application
+- Des noeuds secondaires de plus faible capacité
+
 ## Noeud principal
 
 ### Création de l'instance et du volume
@@ -42,16 +51,35 @@ Avec:
 
 ### Déploiement
 
-1. Lancer le déploiement `.bin/mna deploy:initial:node <environnement>-<n>`
+1. Lancer le déploiement `.bin/mna deploy:initial:node <environnement>_<n>`
 2. Redémarrer le serveur pour appliquer tous les changements
 
-### Monitoring
+### Enregistrement DNS SRV
 
-Veuillez vous référer à la documentation sur [Monitoring](../monitoring.md) pour activer le monitoring du cluster.
+Créer un enregistrement DNS de type `SRV` sur [alwaysdata](https://www.alwaysdata.com/). Cet enregistrement correspond à l'adresse du cluster MongoDB.
+
+Il faut créer un enregistrement de type `SRV` tel que:
+- Hostname: `_mongodb._tcp.mongodb-<environnement>`
+- Type: `SRV`
+- Value: `5 27017 mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
+- Priority: `0`
+
+### Vérification de l'installation
+
+1. Connectez-vous au serveur via `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
+2. Passer en mode super utilisateur `sudo -i`
+3. Vérifiez le status du replica set avec la commande `/opt/app/scripts/mongo.sh --eval 'db.adminCommand({replSetGetStatus: 1})'`. Vous devriez voir votre noeud, et avec le status `PRIMARY`.
+4. Redémarrer le serveur pour appliquer tous les changements: `sudo reboot`
+5. Connectez-vous au VPN
+6. La connection au serveur via: `mongodb+srv//root:<password>@mongodb-<environnement>.apprentissage.beta.gouv.fr/?tls` avec `<password>`: Le mot de passe root tel que défini dans le vault.
 
 ## Noeuds suivants
 
 Suivre la procédure sur [Ajouter un membre à un cluster existant](./add_member.md) pour ajouter les noeuds suivants.
+
+## Monitoring
+
+Veuillez vous référer à la documentation sur [Monitoring](../monitoring.md) pour activer le monitoring du cluster.
 
 ## Backup
 

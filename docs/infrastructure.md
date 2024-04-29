@@ -139,4 +139,3 @@ La liste des utilisateurs est définie dans le vault sous la clé `vault.<enviro
 Pour se connecter à la base de donnée l'utilisateur devra utiliser la chaine de connexion `mongodb+srv://<username>:<password>@mongodb-<environnement>.apprentissage.beta.gouv.fr/<database>?tsl=true`.
 
 Pour gérer certains utilisateurs manuellement, veuillez consulter la [Manage Users and Roles](https://www.mongodb.com/docs/manual/tutorial/manage-users-and-roles/).
-

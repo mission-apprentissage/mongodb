@@ -1,7 +1,7 @@
 ---
 - name: "Create mount directory"
   ansible.builtin.file:
-    path: "/mnt/data/db"
+    path: "/mnt/data"
     state: directory
     mode: "0700"
     owner: mongodb
@@ -16,3 +16,11 @@
     path: "/mnt/data"
     src: "LABEL=MONGO_DATA"
     state: mounted
+
+- name: "Create data directory"
+  ansible.builtin.file:
+    path: "/mnt/data/db"
+    state: directory
+    mode: "0700"
+    owner: mongodb
+    recurse: yes

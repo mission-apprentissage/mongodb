@@ -49,6 +49,9 @@ Veuillez suivre la procédure du [dépot infra](https://github.com/mission-appre
   - Créer un enregistrement DNS de type `A` pour le nom de domaine `mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr` pointant vers l'adresse IP de l'instance.
 - La connexion SSH se fera via `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
 
+> [!CAUTION]
+> Pensez bien à modifier les règles de firewall dans le fichier `.bin/scripts/ovh/ovh-nodejs-client/firewall.js` sur le dépôt `infra` pour autoriser l'accès à la base de données.
+
 ## Formatage du volume
 
 1. Se connecter à l'instance `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
