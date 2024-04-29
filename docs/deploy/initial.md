@@ -64,6 +64,11 @@ Il faut créer un enregistrement de type `SRV` tel que:
 - Value: `5 27017 mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
 - Priority: `0`
 
+Il faut également créer un enregistrement de type `TXT` tel que:
+- Hostname: `mongodb-<environnement>`
+- Type: `TXT`
+- Value: `replicaSet=rs-<environnement>`
+
 ### Vérification de l'installation
 
 1. Connectez-vous au serveur via `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
