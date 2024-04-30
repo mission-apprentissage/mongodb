@@ -61,7 +61,8 @@ L'idée est de tester la migration pour valider le fonctionnement sans nécessit
     - À la question `Source MongoDB host:` répondez avec l'adresse du cluster actuel. **Attention**: utilisez la liste des noeuds du cluster actuel comme indiqué sur la documentation [mongodump](https://www.mongodb.com/docs/database-tools/mongodump/#syntax) suivant le format `replicaset/node1-xxxx.database.cloud.ovh.net,node2-xxxx.database.cloud.ovh.net,node3-xxxx.database.cloud.ovh.net`
     - À la question `Source MongoDB backup username:` répondez avec le nom de l'utilisateur backup créé précédemment.
     - À la question `Source MongoDB backup password:` répondez avec le mot de passe de l'utilisateur backup créé précédemment.
-    - À la question `Name of the database to migrate:` répondez avec le nom de la base de données à migrer.
+    - À la question `Name of the database to migrate from:` répondez avec le nom de la base de données à migrer.
+    - À la question `Name of the database to migrate to:` répondez avec le nom de la base de données de destination.
     > [!TIP]
     > Vous pouvez à tout moment vous détacher de la session tmux en appuyant sur `Ctrl+b` puis `d`. Pour vous y reconnecter, lancez la commande `tmux a`.
 6. Une fois la migration terminée, notez le temps écoulé sur la dernière ligne de log `Elapsed Time` et quittez la session tmux:
