@@ -1,0 +1,29 @@
+name: Mise à jour d'un Cluster
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        type: string
+        required: true
+      numbers:
+        description: JSON environment array
+        type: string
+        required: true
+        default: '[3, 2, 1]'
+
+jobs:
+  setup:
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        n: ${{ fromJSON(inputs.numbers) }}
+    name: Mise à jour de "${{ inputs.cluster }}_${{ matrix.n }}"
+    uses: "./.github/workflows/_deploy.yml"
+    with:
+      environment: "${{ inputs.cluster }}_${{ matrix.n }}"
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+      DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}

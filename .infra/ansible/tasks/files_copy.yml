@@ -10,6 +10,7 @@
     # /app/tools is managed by infra
     - item.path | regex_search('^tools/?') == none
     - item.path | regex_search('^system/?') == none
+    - item.path | regex_search('^logrotate.d/?') == none
 
 - name: Copie des fichiers de l'arborescence /opt/app à partir de .infra/files
   ansible.builtin.copy:
@@ -25,6 +26,7 @@
     # /app/tools is managed by infra
     - item.path | regex_search('^tools/?') == none
     - item.path | regex_search('^system/?') == none
+    - item.path | regex_search('^logrotate.d/?') == none
 
 - name: Copie des template de l'arborescence /opt/app à partir de .infra/files
   ansible.builtin.template:
@@ -37,6 +39,20 @@
     - item.path | regex_search('\.jinja2$') != none
     - item.path | basename != '.gitkeep'
     - item.path | basename != '.DS_Store'
+    # /app/tools is managed by infra
+    - item.path | regex_search('^tools/?') == none
+    - item.path | regex_search('^system/?') == none
+    - item.path | regex_search('^logrotate.d/?') == none
+
+- name: Copy logrotate settings
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/logrotate.d"
+    owner: "root"
+    mode: 0644
+  with_fileglob:
+    - "{{inventory_dir}}/files/logrotate.d/*"
+  notify: restart-logrotate
 
 - name: "MongoDB service configuration"
   ansible.builtin.copy:
