@@ -59,6 +59,7 @@ Consulter les documentations dédiées à la [sauvegarde](./docs/backup/backup.m
 ### Suppression d'un noeud
 
 Pour supprimer un noeud veuillez:
+- Supprimer l'adresse du noeud dans l'enregistrement DNS `SRV` sur alwaysdata.
 - Supprimer le noeud du cluster MongoDB via la commande `.bin/mna deploy:remove:node <environnement>-<n>`
 - Décommissionner le serveur et le volume externe associé.
 - Supprimer la référence du serveur dans le fichier ini de ce dépôt ainsi que celui du dépôt infra.

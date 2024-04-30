@@ -1,0 +1,14 @@
+/var/log/mongodb/mongod.log {
+    daily
+    rotate 90
+    compress
+    delaycompress
+    # Do not rotate if empty
+    notifempty
+    missingok
+    postrotate
+      /opt/app/scripts/rotate-mongod.sh
+    endscript
+
+    create 600 mongodb mongodb
+}

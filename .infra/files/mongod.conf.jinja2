@@ -6,6 +6,16 @@ net:
     disabledProtocols: TLS1_0,TLS1_1
     allowConnectionsWithoutCertificates: true
 
+systemLog:
+  path: /var/log/mongodb/mongod.log
+  logAppend: true
+  logRotate: reopen
+  destination: file
+
+operationProfiling:
+  mode: slowOp
+  slowOpThresholdMs: 500
+
 setParameter:
   tlsUseSystemCA: true
 

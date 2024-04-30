@@ -24,3 +24,19 @@
 
 - name: "Setup Network"
   include_tasks: ./tweaks/network.yml
+
+- name: "Create log directory"
+  ansible.builtin.file:
+    path: "/var/log/mongodb"
+    state: directory
+    mode: "0700"
+    owner: mongodb
+    recurse: yes
+
+- name: "Create log file"
+  ansible.builtin.file:
+    path: "/var/log/mongodb/mongod.log"
+    state: touch
+    mode: "0600"
+    owner: mongodb
+    group: mongodb
