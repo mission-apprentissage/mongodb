@@ -25,6 +25,7 @@ Veuillez lancer la commande `.bin/mna deploy:extra:node <environnement>_<n>` pou
 Créer un enregistrement DNS de type `SRV` sur [alwaysdata](https://www.alwaysdata.com/). Cet enregistrement correspond à l'adresse du cluster MongoDB.
 
 Il faut créer un enregistrement de type `SRV` tel que:
+
 - Hostname: `_mongodb._tcp.mongodb-<environnement>`
 - Type: `SRV`
 - Value: `1 27017 mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`

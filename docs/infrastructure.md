@@ -14,6 +14,7 @@ Les clusters sont composés de noeuds (serveurs) MongoDB. Par convention les clu
 Un volume externe est monté sur le serveur sur `/mnt/data` pour le stockage des données. Il est possible de lister les volumes montés avec la commande `df -h`.
 
 Le volume contient donc:
+
 - `/mnt/data/db` pour les données MongoDB
 - `/mnt/data/mongodb.pem` le certificat TLS utilisé
 - `/mnt/data/keyfile` le keyfile pour l'authentification des membres du cluster
@@ -58,6 +59,7 @@ Le certificat est renouvelé automatiquement par la configuration contenue dans 
 Cependant les certificats générés par certbot ne peuvent pas être utilisés directement par MongoDB. Il est nécessaire de créer un fichier PEM contenant la clé privée et la chaine de certificat complète. Pour plus d'information sur la création de ce fichier, se référer à la [documentation officielle](https://www.mongodb.com/docs/manual/tutorial/configure-ssl/).
 
 Ainsi sur le serveur se trouve 2 scripts pour la gestion du certificat:
+
 - `/opt/app/scripts/update_cert.sh`: crée le fichier `/mnt/data/mongodb.pem` à partir des certificats générés par certbot.
 - `/opt/app/scripts/rotate_cert.sh`: met à jour le certificat via le script `update_cert.sh` et envoie le signal de rotation des certificats à MongoDB [db.rotateCertificate()](https://www.mongodb.com/docs/manual/reference/method/db.rotateCertificates/).
 
@@ -85,7 +87,8 @@ Mais conmpte tenu de la configuration du serveur, il est assez complexe de se co
 - l'utilisation du keyfile nécessite de se connecter via l'utilisateur `__system` sur la base `local`
 - le mode TLS est requis, ce qui nécessite d'utiliser le nom de domaine du serveur pour se connecter.
 
-Ainsi nous avons créé 2 scripts pour faciliter la connexion au serveur: 
+Ainsi nous avons créé 2 scripts pour faciliter la connexion au serveur:
+
 - `/opt/app/scripts/mongo_local.sh`: pour se connecter directement au serveur avec les paramètres nécessaires.
 - `/opt/app/scripts/mongo.sh`: pour se connecter au cluster avec les paramètres nécessaires via l'utilisateur `root`.
 
@@ -131,6 +134,7 @@ L'enregistrement SRV est configuré dans le DNS de la zone `apprentissage.beta.g
 ### Gestion des utilisateurs
 
 La liste des utilisateurs est définie dans le vault sous la clé `vault.<environnement>.users`, la configuration de chaque utilisateur est la suivante:
+
 - `username`: le nom d'utilisateur
 - `password`: le mot de passe
 - `roles`: la liste des rôles de l'utilisateur séparés par des virgules. Veuillez consulter la [Built-In Roles](https://www.mongodb.com/docs/manual/reference/built-in-roles/) pour la liste des roles par defaut.

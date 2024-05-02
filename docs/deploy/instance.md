@@ -41,6 +41,7 @@ En effet les VPS présentent plusieurs limitations:
 ## Setup Infra
 
 Veuillez suivre la procédure du [dépot infra](https://github.com/mission-apprentissage/infra/blob/main/docs/provisionning.md) pour la configuration du serveur avec les ajustements suivants:
+
 - Déclaration de l'envrionnement
   - Nommer l'environnement suivant la convention `mongodb-<environnement>-<n>`
   - Les variables `dns_name` & `host_name` doivent être nommées suivant la convention `mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
@@ -73,6 +74,7 @@ env_type=mongodb-<environnement>
 ```
 
 Avec:
-    - `<environnement>`: Nom de l'environnement
-    - `<n>`: Numéro du noeud
-    - `<ip>`: Adresse IP de l'instance
+
+- `<environnement>`: Nom de l'environnement
+- `<n>`: Numéro du noeud
+- `<ip>`: Adresse IP de l'instance
