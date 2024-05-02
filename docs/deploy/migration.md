@@ -128,7 +128,7 @@ Exécutez les étapes de la section [Test de la migration](#test-de-la-migration
 Lancez la commande suivante pour mettre à jour la version de compatibilité des fonctionnalités:
     
 ```bash
-/opt/app/scripts/mongo.sh --eval 'db.adminCommand( { setFeatureCompatibilityVersion: "6.0", confirm: true } )'
+/opt/app/scripts/mongo.sh --eval 'db.adminCommand( { setFeatureCompatibilityVersion: "7.0", confirm: true } )'
 ```
 
 ### Déploiement

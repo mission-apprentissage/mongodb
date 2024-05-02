@@ -38,16 +38,17 @@ vault:
 ```
 
 Avec:
-    - `<environnement>`: Nom de l'environnement
-    - `KEYFILE`: créer un secret via `pwgen -s 1024 1`
-    - `root`: Mot de passe de l'utilisateur `root` de la base de données `pwgen -s 64 1`
-    - `backup`: Mot de passe de l'utilisateur `backup` de la base de données `pwgen -s 64 1` utilisé pour les opérations de backup et restauration.
-    - `pmm`: Mot de passe de l'utilisateur `pmm` de la base de données `pwgen -s 64 1` utilisé pour le monitoring percona.
-    - `users`: Liste des utilisateurs à créer
-        - `name`: Nom de l'utilisateur
-        - `password`: Mot de passe de l'utilisateur `pwgen -s 64 1`
-        - `database`: Nom de la base de données liée à l'utilisateur
-        - `roles`: Liste des rôles de l'utilisateur séparés par une virgule
+
+- `<environnement>`: Nom de l'environnement
+- `KEYFILE`: créer un secret via `pwgen -s 1024 1`
+- `root`: Mot de passe de l'utilisateur `root` de la base de données `pwgen -s 64 1`
+- `backup`: Mot de passe de l'utilisateur `backup` de la base de données `pwgen -s 64 1` utilisé pour les opérations de backup et restauration.
+- `pmm`: Mot de passe de l'utilisateur `pmm` de la base de données `pwgen -s 64 1` utilisé pour le monitoring percona.
+- `users`: Liste des utilisateurs à créer
+    - `name`: Nom de l'utilisateur
+    - `password`: Mot de passe de l'utilisateur `pwgen -s 64 1`
+    - `database`: Nom de la base de données liée à l'utilisateur
+    - `roles`: Liste des rôles de l'utilisateur séparés par une virgule
 
 ### Déploiement
 

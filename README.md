@@ -1,4 +1,4 @@
-# MongoDB Cluster - Missing Apprentissage
+# MongoDB Cluster - Mission Apprentissage
 
 Ce depot contient la configuration des différents cluster MongoDB de la Mission Apprentissage. 
 
@@ -35,6 +35,8 @@ En plus de MongoDB les serveurs ont un Docker Swarm pour le lancement des servic
 | Nom du cluster | URL de connexion | Noeud #1 | Noeud #2 | Noeud #3 |
 | -------------- | ---------------- | -------- | -------- | -------- |
 | `mongodb-recette` | `mongodb+srv://<credentials>@mongodb-recette.apprentissage.beta.gouv.fr` | `mongodb-recette-1.apprentissage.beta.gouv.fr` | `n/a` | `n/a` |
+| `mongodb-contrat` | `mongodb+srv://<credentials>@mongodb-contrat.apprentissage.beta.gouv.fr` | `mongodb-contrat-1.apprentissage.beta.gouv.fr` | `n/a` | `n/a` |
+| `mongodb-bal` | `mongodb+srv://<credentials>@mongodb-bal.apprentissage.beta.gouv.fr` | `mongodb-bal-1.apprentissage.beta.gouv.fr` | `mongodb-bal-2.apprentissage.beta.gouv.fr` | `mongodb-bal-3.apprentissage.beta.gouv.fr` |
 
 ### Déploiement
 
@@ -59,6 +61,7 @@ Consulter les documentations dédiées à la [sauvegarde](./docs/backup/backup.m
 ### Suppression d'un noeud
 
 Pour supprimer un noeud veuillez:
+
 - Supprimer l'adresse du noeud dans l'enregistrement DNS `SRV` sur alwaysdata.
 - Supprimer le noeud du cluster MongoDB via la commande `.bin/mna deploy:remove:node <environnement>-<n>`
 - Décommissionner le serveur et le volume externe associé.
@@ -68,6 +71,7 @@ Pour supprimer un noeud veuillez:
 ### Dépannage
 
 Voici une liste des problèmes courants et des solutions associées:
+
 - [Augmenter le volume d'un noeud](./docs/troubleshooting/increase_volume.md): Augmenter la taille du volume d'un noeud.
 - [Perte d'un noeud](./docs/troubleshooting/lost_node.md): Procédure en cas de perte d'un noeud.
 
