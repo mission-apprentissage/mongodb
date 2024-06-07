@@ -65,12 +65,12 @@ Veuillez suivre la procédure du [dépot infra](https://github.com/mission-appre
 Ajouter l'environnement dans le fichier `.infra/env.ini`:
 
 ```ini
-[mongodb-<environnement>-<n>]
+[<environnement>_<n>]
 <ip>
-[mongodb-<environnement>-<n>:vars]
+[<environnement>_<n>:vars]
 dns_name=mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr
-host_name=mongodb-<environnement>-<n>
-env_type=mongodb-<environnement>
+host_name=mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr
+env_type=<environnement>
 ```
 
 Avec:
