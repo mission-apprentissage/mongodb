@@ -45,13 +45,13 @@ Veuillez suivre la procédure du [dépot infra](https://github.com/mission-appre
 - Déclaration de l'envrionnement
   - Nommer l'environnement suivant la convention `mongodb-<environnement>-<n>`
   - Les variables `dns_name` & `host_name` doivent être nommées suivant la convention `mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
-  - La variable `env_type` doit être `mongodb-<environnement>`
+  - La variable `env_type` doit être `<environnement>` pour un accès depuis le produit `<produit>-production`
 - Création du nom de domaine
   - Créer un enregistrement DNS de type `A` pour le nom de domaine `mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr` pointant vers l'adresse IP de l'instance.
 - La connexion SSH se fera via `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
 
 > [!CAUTION]
-> Pensez bien à modifier les règles de firewall dans le fichier `.bin/scripts/ovh/ovh-nodejs-client/firewall.js` sur le dépôt `infra` pour autoriser l'accès à la base de données.
+> Pensez à vérifier la valeur `env_type` sur le dépôt `infra` pour autoriser l'accès à la base de données. Veuillez consulter la configuration firewall `.bin/scripts/ovh/ovh-nodejs-client/firewall.js`.
 
 ## Formatage du volume
 
