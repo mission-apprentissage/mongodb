@@ -28,7 +28,7 @@ En effet les VPS présentent plusieurs limitations:
 2. Cliquer sur `Créer un volume`
    1. Sélectionner une région identique à l'instance précédente (par exemple `GRA11`)
    2. Choisir le type de volume `high-speed-gen2`
-   3. Choisir la taille du volume (par exemple `200Go`)
+   3. Choisir la taille du volume (par exemple `20Go`)
    4. Nommer le volume suivant le format `mongodb-<environnement>-<n>`
    5. Cliquer sur `Créer le volume`
 
