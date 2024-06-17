@@ -24,7 +24,7 @@ Dans le cas où le cluster ne dispose plus de la majorité des membres, il est n
 Vous pouvez également vous référer à la documentation officielle de MongoDB pour plus d'informations [Reconfigure a Replica Set with Unavailable Members](https://www.mongodb.com/docs/manual/tutorial/reconfigure-replica-set-with-unavailable-members/)
 
 1. Connectez vous à un noeud du cluster.
-2. Lancez la commande `/opt/app/scripts/mongo.sh` pour vous connecter à l'instance MongoDB.
+2. Lancez la commande `/opt/app/scripts/mongo_local.sh` pour vous connecter à l'instance MongoDB local.
 3. Lancez la commande `rs.status()` pour obtenir la liste des membres du cluster.
 4. Récupérez la configuration actuelle du cluster avec la commande `cfg = rs.conf()`.
 5. Mettez à jour la configuration pour retirer le noeud perdu avec la commande `cfg.members = cfg.members.filter(member => member.host !== "<hostname>")` où `<hostname>` est le nom du noeud perdu.
