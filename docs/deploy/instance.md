@@ -82,3 +82,5 @@ Avec:
 - `<environnement>`: Nom de l'environnement
 - `<n>`: Numéro du noeud
 - `<ip>`: Adresse IP de l'instance
+
+## Poursuivre à l'étape [Créer un nouveau cluster](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/initial.md)
