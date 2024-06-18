@@ -1,6 +1,6 @@
 # Changer le noeud primaire
 
-La solution la plus simple et d'attribuer une priorité plus forte au noeud allant devenir primaire et laisser le cluster procéder au changement. Le language Javascript peut être utiliser pour manipuler la configuration du cluster.
+La solution la plus simple est d'attribuer une priorité plus forte au noeud allant devenir primaire et laisser le cluster procéder au changement. Le langage JavaScript peut être utilisé pour manipuler la configuration du cluster.
 
 ## Mettre à jour la priorité
 
