@@ -7,7 +7,7 @@ La solution la plus simple est d'attribuer une priorité plus forte au noeud all
 - En mode SUDO, depuis n’importe quel noeud, lancer :
 
 ```js
-./script/mongo.sh
+/opt/app/script/mongo.sh
 ```
 
 - Placer rs.conf() dans une variable :
