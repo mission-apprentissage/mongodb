@@ -83,4 +83,4 @@ Avec:
 - `<n>`: Numéro du noeud
 - `<ip>`: Adresse IP de l'instance
 
-## Poursuivre à l'étape [Créer un nouveau cluster](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/initial.md)
+## Poursuivre à l'étape [Créer un nouveau cluster](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/initial.md) ou [Ajouter un noeud](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/add_member.md)
