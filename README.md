@@ -1,6 +1,6 @@
 # MongoDB Cluster - Mission Apprentissage
 
-Ce depot contient la configuration des différents cluster MongoDB de la Mission Apprentissage. 
+Ce depot contient la configuration des différents cluster MongoDB de la Mission Apprentissage.
 
 ## Architecture
 
@@ -11,6 +11,7 @@ Les clusters MongoDB sont composés d'un ou plus noeuds (serveur). Ils sont bas�
 MongoDB est installé sur les serveurs via les packages officiels de MongoDB en natif.
 
 La configuration de MongoDB comprend:
+
 - La création des utilisateurs via le vault
 - La création du keyfile pour l'authentification des membres du cluster
 - La configuration du fichier de configuration de MongoDB avec:
@@ -25,22 +26,25 @@ La configuration de MongoDB comprend:
 Pour plus de détails sur la configuration lié à MongoDB se référer à la [documentation de l'infrastructure](./docs/infrastructure.md).
 
 En plus de MongoDB les serveurs ont un Docker Swarm pour le lancement des services système définis dans le dépot [infra](https://github.com/mission-apprentissage/infra):
+
 - un conteneur cadvisor pour la supervision des conteneurs
 - un conteneur node-exporter pour la supervision du système
 - un conteneur fluentd pour la collecte des logs
 - un conteneur reverse proxy pour l'accès aux métriques par le serveur de monitoring (cadvisor, node-exporter, fluentd-prometheus-exporter).
 
 ### Liste des clusters
-  
-| Nom du cluster | URL de connexion | Noeud #1 | Noeud #2 | Noeud #3 |
-| -------------- | ---------------- | -------- | -------- | -------- |
-| `mongodb-recette` | `mongodb+srv://<credentials>@mongodb-recette.apprentissage.beta.gouv.fr` | `mongodb-recette-1.apprentissage.beta.gouv.fr` | `n/a` | `n/a` |
-| `mongodb-contrat` | `mongodb+srv://<credentials>@mongodb-contrat.apprentissage.beta.gouv.fr` | `mongodb-contrat-1.apprentissage.beta.gouv.fr` | `n/a` | `n/a` |
-| `mongodb-bal` | `mongodb+srv://<credentials>@mongodb-bal.apprentissage.beta.gouv.fr` | `mongodb-bal-1.apprentissage.beta.gouv.fr` | `mongodb-bal-2.apprentissage.beta.gouv.fr` | `mongodb-bal-3.apprentissage.beta.gouv.fr` |
+
+| Nom du cluster    | URL de connexion                                                         | Noeud #1                                       | Noeud #2                                   | Noeud #3                                   |
+| ----------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------ | ------------------------------------------ |
+| `mongodb-recette` | `mongodb+srv://<credentials>@mongodb-recette.apprentissage.beta.gouv.fr` | `mongodb-recette-1.apprentissage.beta.gouv.fr` | `n/a`                                      | `n/a`                                      |
+| `mongodb-contrat` | `mongodb+srv://<credentials>@mongodb-contrat.apprentissage.beta.gouv.fr` | `mongodb-contrat-1.apprentissage.beta.gouv.fr` | `n/a`                                      | `n/a`                                      |
+| `mongodb-bal`     | `mongodb+srv://<credentials>@mongodb-bal.apprentissage.beta.gouv.fr`     | `mongodb-bal-1.apprentissage.beta.gouv.fr`     | `mongodb-bal-2.apprentissage.beta.gouv.fr` | `mongodb-bal-3.apprentissage.beta.gouv.fr` |
+| `mongodb-lba`     | `mongodb+srv://<credentials>@mongodb-lba.apprentissage.beta.gouv.fr`     | `mongodb-lba-1.apprentissage.beta.gouv.fr`     | `mongodb-lba-2.apprentissage.beta.gouv.fr` | `mongodb-lba-3.apprentissage.beta.gouv.fr` |
 
 ### Déploiement
 
 Le déploiement des clusters est fait via Ansible, mais certaines actions ne sont pas automatisées:
+
 - L'ajout du volume externe
 - Le formatage initial du volume externe
 

@@ -5,6 +5,7 @@ Cette page décrit comment provisionner un serveur pouvant être utiliser dans l
 Il est nécessaire d'utiliser [Public Cloud Compute](https://www.ovhcloud.com/fr/public-cloud/compute/) pour le serveur et non pas un Virtual Private Server (VPS).
 
 En effet les VPS présentent plusieurs limitations:
+
 - Pas de support pour les volumes additionnels
 - Le volume principal est limité à 500Go
 - Pas de support pour les snapshots
@@ -27,7 +28,7 @@ En effet les VPS présentent plusieurs limitations:
 2. Cliquer sur `Créer un volume`
    1. Sélectionner une région identique à l'instance précédente (par exemple `GRA11`)
    2. Choisir le type de volume `high-speed-gen2`
-   3. Choisir la taille du volume (par exemple `200Go`)
+   3. Choisir la taille du volume (par exemple `20Go`)
    4. Nommer le volume suivant le format `mongodb-<environnement>-<n>`
    5. Cliquer sur `Créer le volume`
 
@@ -48,6 +49,9 @@ Veuillez suivre la procédure du [dépot infra](https://github.com/mission-appre
   - La variable `env_type` doit être `<environnement>` pour un accès depuis le produit `<produit>-production`
 - Création du nom de domaine
   - Créer un enregistrement DNS de type `A` pour le nom de domaine `mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr` pointant vers l'adresse IP de l'instance.
+- Suivre la procédure du dépot infra, à savoir :
+  - Lancer la commande `.bin/mna system:setup:initial mongodb <environnement>`
+  - A la question `Do you want to setup the server with a RSA key?`, répondre `yes`
 - La connexion SSH se fera via `ssh mongodb-<environnement>-<n>.apprentissage.beta.gouv.fr`
 
 > [!CAUTION]
@@ -78,3 +82,5 @@ Avec:
 - `<environnement>`: Nom de l'environnement
 - `<n>`: Numéro du noeud
 - `<ip>`: Adresse IP de l'instance
+
+## Poursuivre à l'étape [Créer un nouveau cluster](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/initial.md) ou [Ajouter un noeud](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/add_member.md)
