@@ -11,14 +11,15 @@ case $response in
 ;;
 esac
 
-read -p "Source MongoDB host: " sourceHost
+read -p "Source MongoDB SRV Host: " sourceHost
 read -p "Source MongoDB backup username: " username
 read -p "Source MongoDB backup password: " password
 read -p "Name of the database to migrate from: " dbName
 read -p "Name of the database to migrate to: " dbNameTarget
 
+sourceUri="mongodb+srv://${username}:${password}@${sourceHost}/?tls=true"
 targetUri="mongodb+srv://root:{{vault[env_type].root}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true"
 
 SECONDS=0
-mongodump --ssl --host="${sourceHost}" --password="${password}" --username="${username}" --archive | mongorestore --archive --nsInclude="${dbName}.*" --nsFrom="${dbName}.*" --nsTo="${dbNameTarget}.*" --uri="${targetUri}" --drop
+mongodump --ssl --uri="${targetUri}"  --archive --authenticationDatabase=admin --db="${dbName}" | mongorestore --archive --nsInclude="${dbName}.*" --nsFrom="${dbName}.*" --nsTo="${dbNameTarget}.*" --uri="${targetUri}" --drop
 echo "Elapsed Time: $SECONDS seconds"
