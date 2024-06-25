@@ -60,6 +60,7 @@ L'idée est de tester la migration pour valider le fonctionnement sans nécessit
    ```
    - À la question `Does all services are stopped ?` répondez `y`
      - Se référer à [Arrêt des services](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/migration.md#arr%C3%AAt-des-services)
+     - Dans le cas du test de la migration, répondez `y` sans arreter les services; il s'agit de s'assurer que le script fonctionne correctement avant
    - À la question `Source MongoDB host:` répondez avec l'adresse URI actuel. **Attention**: utilisez la chaine de connexion **SRV**.
    - À la question `Source MongoDB backup username:` répondez avec le nom de l'utilisateur backup créé précédemment.
    - À la question `Source MongoDB backup password:` répondez avec le mot de passe de l'utilisateur backup créé précédemment.
