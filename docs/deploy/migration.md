@@ -59,13 +59,17 @@ L'idée est de tester la migration pour valider le fonctionnement sans nécessit
     /opt/app/scripts/migrate.sh
    ```
    - À la question `Does all services are stopped ?` répondez `y`
+     - Se référer à [Arrêt des services](https://github.com/mission-apprentissage/mongodb/blob/main/docs/deploy/migration.md#arr%C3%AAt-des-services)
+     - Dans le cas du test de la migration, répondez `y` sans arreter les services; il s'agit de s'assurer que le script fonctionne correctement avant
    - À la question `Source MongoDB host:` répondez avec l'adresse URI actuel. **Attention**: utilisez la chaine de connexion **SRV**.
    - À la question `Source MongoDB backup username:` répondez avec le nom de l'utilisateur backup créé précédemment.
    - À la question `Source MongoDB backup password:` répondez avec le mot de passe de l'utilisateur backup créé précédemment.
    - À la question `Name of the database to migrate from:` répondez avec le nom de la base de données à migrer.
    - À la question `Name of the database to migrate to:` répondez avec le nom de la base de données de destination.
-     > [!TIP]
-     > Vous pouvez à tout moment vous détacher de la session tmux en appuyant sur `Ctrl+b` puis `d`. Pour vous y reconnecter, lancez la commande `tmux a`.
+
+> [!TIP]
+> Vous pouvez à tout moment vous détacher de la session tmux en appuyant sur `Ctrl+b` puis `d`. Pour vous y reconnecter, lancez la commande `tmux a`.
+
 6. Une fois la migration terminée, notez le temps écoulé sur la dernière ligne de log `Elapsed Time` et quittez la session tmux:
    ```bash
    exit
