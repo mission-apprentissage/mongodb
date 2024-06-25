@@ -17,9 +17,9 @@ read -p "Source MongoDB backup password: " password
 read -p "Name of the database to migrate from: " dbName
 read -p "Name of the database to migrate to: " dbNameTarget
 
-sourceUri="mongodb+srv://${username}:${password}@${sourceHost}/${dbName}?tls=true"
+sourceUri="mongodb+srv://${username}:${password}@${sourceHost}/?tls=true"
 targetUri="mongodb+srv://root:{{vault[env_type].root}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true"
 
 SECONDS=0
-mongodump --ssl --uri="${targetUri}"  --archive --authenticationDatabase=admin | mongorestore --archive --nsInclude="${dbName}.*" --nsFrom="${dbName}.*" --nsTo="${dbNameTarget}.*" --uri="${targetUri}" --drop
+mongodump --ssl --uri="${sourceUri}" --db="${dbName}" --archive --authenticationDatabase=admin | mongorestore --archive --nsInclude="${dbName}.*" --nsFrom="${dbName}.*" --nsTo="${dbNameTarget}.*" --uri="${targetUri}" --drop
 echo "Elapsed Time: $SECONDS seconds"
