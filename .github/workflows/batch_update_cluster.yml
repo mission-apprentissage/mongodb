@@ -18,6 +18,7 @@ jobs:
     uses: "./.github/workflows/update_cluster.yml"
     with:
       cluster: ${{ matrix.cluster }}
+      numbers: '[3, 2, 1]'
     secrets:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
