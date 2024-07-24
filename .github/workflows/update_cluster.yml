@@ -10,6 +10,27 @@ on:
         type: string
         required: true
         default: '[3, 2, 1]'
+  workflow_call:
+    inputs:
+      cluster:
+        type: string
+        required: true
+      numbers:
+        type: string
+        required: true
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY:
+        description: SSH private key
+        required: true
+      DEPLOY_PASS:
+        description: SSH PWD TO DEPLOY
+        required: true
+      SLACK_WEBHOOK:
+        description: Slack webhook URL
+        required: true
+      VAULT_PWD:
+        description: Vault Password
+        required: true
 
 jobs:
   setup:
