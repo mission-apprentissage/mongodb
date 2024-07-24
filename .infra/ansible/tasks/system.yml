@@ -16,9 +16,6 @@
     cmd: "/opt/app/tools/update-stack.sh"
   register: docker_deploy_output
 
-- debug:
-    var: docker_deploy_output
-
 - name: Attente du deploiement
   shell:
     chdir: /opt/app

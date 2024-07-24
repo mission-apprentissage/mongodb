@@ -25,9 +25,6 @@
     cmd: "pmm-admin list"
   register: pmm_services
 
-- debug: 
-    var: pmm_services.stdout.find('mongodb_exporter') == -1
-
 - name: "Register MongoDB service"
   ansible.builtin.shell:
     cmd: "pmm-admin add mongodb --username root --password \"{{ vault[env_type].root }}\" --cluster {{env_type}} --tls {{host_name}} {{dns_name}}:27017"
