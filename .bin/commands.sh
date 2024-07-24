@@ -28,6 +28,7 @@ function bin:setup() {
 }
 
 function deploy:update:node() {
+  product:validate:env "$1"
   "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=update"
 }
 
@@ -66,3 +67,17 @@ function deploy:log:decrypt() {
   "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@"
 }
 
+function product:validate:env() {
+  # If we're able to get ip then we're good
+  local env_ip=$(ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible-inventory --list -l "$1" | jq -r ".${1}.hosts[0]")
+
+  echo $env_ip
+  if [[ "$env_ip" == "null" ]]; then
+    if [[ -z "${CI:-}" ]]; then
+      exit 1;
+    else
+      # If we are in CI just exit 0 to allow batch
+      exit 0;
+    fi;
+  fi;
+}
