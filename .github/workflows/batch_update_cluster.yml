@@ -1,4 +1,4 @@
-name: Setup Batch
+name: Mise à jour de plusieurs clusters
 on:
   workflow_dispatch:
     inputs:
