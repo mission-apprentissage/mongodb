@@ -19,7 +19,7 @@
   when: not aws_cli_installed.stat.exists
 
 - name: Configure AWS
-  ansible.builtin.command: aws configure set {{ item.key }} {{ item.value }} --profile default
+  ansible.builtin.command: aws configure set {{ item.key }} {{ item.value }} --profile mongodb
   become: true
   with_dict:
     aws_access_key_id: "{{ vault.OVH_S3_API_KEY }}"
@@ -30,6 +30,7 @@
 - include_tasks: ./_create_s3_bucket.yml
   vars:
     bucket_name: "{{ dns_name }}-backups"
+    profile: mongodb
 
 - name: Add cron to backup DB daily
   ansible.builtin.cron:
