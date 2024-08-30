@@ -4,6 +4,7 @@
   vars:
     role:
       name: "any"
+      database: "admin"
       privileges:
         - resource:
             anyResource: true
