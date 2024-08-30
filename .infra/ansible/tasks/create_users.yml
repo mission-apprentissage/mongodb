@@ -1,19 +1,26 @@
 ---
+- name: "Create role any"
+  include_tasks: create_role.yml
+  vars:
+    role:
+      name: "any"
+      privileges:
+        - resource:
+            anyResource: true
+          actions: [anyAction]
+
+- name: "Create custom roles"
+  include_tasks: create_role.yml
+  loop: "{{vault[env_type].roles}}"
+  loop_control:
+    loop_var: role
+  when: "{{vault[env_type].roles | default('') | length > 0 }}"
+
 - name: "Create users"
   include_tasks: create_user.yml
   loop: "{{vault[env_type].users}}"
   loop_control:
     loop_var: user
-
-- name: "Create custom roles"
-  shell:
-    cmd: "/opt/app/scripts/mongo_local.sh /opt/app/configs/mongodb/create_roles.js"
-  when: context == "new-cluster"
-
-- name: "Create custom roles"
-  shell:
-    cmd: "/opt/app/scripts/mongo.sh /opt/app/configs/mongodb/create_roles.js"
-  when: context != "new-cluster"
 
 - name: "Create root user"
   include_tasks: create_user.yml

@@ -1,11 +1,15 @@
+const roleName = process.env['NAME'];
+const privileges = JSON.parse(process.env['PRIVILEGES'])
+
 db = db.getSiblingDB('admin');
-const role = db.getRole('any');
+const role = db.getRole(roleName);
 if (!role) {
     db.createRole({
-        role: 'any',
+        role: roleName,
         privileges: [],
         roles: [],
     });
 }
 
-db.grantPrivilegesToRole('any', [{ resource: { anyResource: true }, actions: ['anyAction'] }]);
+db.grantPrivilegesToRole(roleName, privileges);
+
