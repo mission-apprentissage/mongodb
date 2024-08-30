@@ -1,0 +1,16 @@
+---
+- name: "Create role {{ role.name }}"
+  shell:
+    cmd: '/opt/app/scripts/mongo_local.sh /opt/app/configs/mongodb/create_roles.js'
+  environment:
+    NAME: "{{ role.name }}"
+    PRIVILEGES: '{{ role.privileges |to_nice_json }}'
+  when: context == "new-cluster"
+
+- name: "Create role {{ role.name }}"
+  shell:
+    cmd: '/opt/app/scripts/mongo.sh /opt/app/configs/mongodb/create_roles.js'
+  environment:
+    NAME: "{{ role.name }}"
+    PRIVILEGES: '{{ role.privileges | to_nice_json }}'
+  when: context != "new-cluster"
