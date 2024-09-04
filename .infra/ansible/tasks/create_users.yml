@@ -9,6 +9,7 @@
         - resource:
             anyResource: true
           actions: [anyAction]
+      roles: []
 
 - name: "Create custom roles"
   include_tasks: create_role.yml
@@ -30,7 +31,9 @@
       name: "root"
       password: "{{vault[env_type].root}}"
       database: "admin"
-      roles: "root"
+      roles:
+        - role: "root"
+          db: 'admin'
 
 - name: "Create backup user"
   include_tasks: create_user.yml
@@ -39,7 +42,9 @@
       name: "backup"
       password: "{{vault[env_type].backup}}"
       database: "admin"
-      roles: "any"
+      roles:
+        - role: "any"
+          db: 'admin'
 
 - name: "Create pmm user"
   include_tasks: create_user.yml
@@ -48,4 +53,6 @@
       name: "pmm"
       password: "{{vault[env_type].pmm}}"
       database: "admin"
-      roles: "any"
+      roles:
+        - role: "any"
+          db: 'admin'

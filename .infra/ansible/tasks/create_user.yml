@@ -6,7 +6,7 @@
     USERNAME: "{{ user.name }}"
     PASSWORD: "{{ user.password }}"
     DATABASE: "{{ user.database }}"
-    ROLES: "{{ user.roles }}"
+    ROLES: "{{ user.roles | to_nice_json }}"
   when: context == "new-cluster"
 
 - name: "Create user {{ user.name }}"
@@ -16,5 +16,5 @@
     USERNAME: "{{ user.name }}"
     PASSWORD: "{{ user.password }}"
     DATABASE: "{{ user.database }}"
-    ROLES: "{{ user.roles }}"
+    ROLES: "{{ user.roles | to_nice_json }}"
   when: context != "new-cluster"

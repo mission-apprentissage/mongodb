@@ -6,6 +6,7 @@
     NAME: "{{ role.name }}"
     DATABASE: "{{ role.database }}"
     PRIVILEGES: '{{ role.privileges |to_nice_json }}'
+    ROLES: '{{ role.roles | to_nice_json }}'
   when: context == "new-cluster"
 
 - name: "Create role {{ role.name }}"
@@ -15,4 +16,5 @@
     NAME: "{{ role.name }}"
     DATABASE: "{{ role.database }}"
     PRIVILEGES: '{{ role.privileges | to_nice_json }}'
+    ROLES: '{{ role.roles | to_nice_json }}'
   when: context != "new-cluster"
