@@ -1,9 +1,7 @@
 const username = process.env['USERNAME'];
 const password = process.env['PASSWORD'];
 const database = process.env['DATABASE'];
-const rolesStr = process.env['ROLES'];
-
-const roles = rolesStr.split(',').map(role => ({ role, db: database }));
+const roles =  JSON.parse(process.env['ROLES']);
 
 db = db.getSiblingDB(database);
 const user = db.getUser(username);
