@@ -16,16 +16,10 @@ La solution la plus simple est d'attribuer une priorité plus forte au noeud all
 config = rs.conf();
 ```
 
-- Afficher les valeurs contenues dans `config` :
-
-```js
-config;
-```
-
 - Modifier la valeur du membre souhaite en primaire à une valeur plus haute que les autres noeuds
 
 ```js
-c.member[n].priority = x;
+config.member[n].priority = x;
 ```
 
 - Appliquer la nouvelle configuration :
@@ -37,5 +31,5 @@ rs.reconfig(config);
 - Vérifier le statut, cela peut prendre quelques minutes :
 
 ```js
-rs.status();
+rs.config();
 ```
