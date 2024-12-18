@@ -14,7 +14,7 @@ function Help() {
    echo "  vault:edit                                              Edit vault file"
    echo "  vault:password                                          Show vault password"
    echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
-   echo "  deploy:log:dencrypt                        Decrypt Github ansible logs"
+   echo "  deploy:log:decrypt                        Decrypt Github ansible logs"
    echo 
    echo
 }
@@ -60,11 +60,11 @@ function vault:password() {
 }
 
 function deploy:log:encrypt() {
-  (cd $ROOT_DIR && "${SCRIPT_DIR}/deploy-log-encrypt.sh" "$@")
+  (cd "$ROOT_DIR" && "${SCRIPT_DIR}/deploy-log-encrypt.sh" "$@")
 }
 
 function deploy:log:decrypt() {
-  (cd $ROOT_DIR && "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@")
+  (cd "$ROOT_DIR" && "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@")
 }
 
 function product:validate:env() {
