@@ -46,8 +46,8 @@ function deploy:remove:node() {
 
 function vault:init() {
   # Ensure Op is connected
-  op account get > /dev/null
-  op document get ".vault-password-tmpl" --vault "mna-vault-passwords-common" > "${ROOT_DIR}/.infra/vault/.vault-password.gpg"
+  op --account mission-apprentissage account get > /dev/null
+  op --account mission-apprentissage document get ".vault-password-tmpl" --vault "mna-vault-passwords-common" > "${ROOT_DIR}/.infra/vault/.vault-password.gpg"
 }
 
 function vault:edit() {
@@ -65,6 +65,22 @@ function deploy:log:encrypt() {
 
 function deploy:log:decrypt() {
   (cd "$ROOT_DIR" && "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@")
+}
+
+function backup:bucket:list() {
+  "${SCRIPT_DIR}/s3.sh" ls --human-readable
+}
+
+function backup:list() {
+  PREFIX=${1:?"Merci de préciser le path S3 (utiliser la commande 'backup:bucket:list' pour obtenir la liste des buckets)"}
+  "${SCRIPT_DIR}/s3.sh" ls --human-readable "s3://${PREFIX}"
+}
+
+function backup:download() {
+  FILENAME=${1:?"Merci de préciser le fichier"}
+  mkdir -p "${ROOT_DIR}/tmp"
+  "${SCRIPT_DIR}/s3.sh" cp "s3://${FILENAME}" "${ROOT_DIR}/tmp/${FILENAME}"
+  "${SCRIPT_DIR}/decrypt.sh" "${ROOT_DIR}/tmp/${FILENAME}" > "${ROOT_DIR}/tmp/${FILENAME}.secret"
 }
 
 function product:validate:env() {

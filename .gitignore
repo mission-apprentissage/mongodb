@@ -157,6 +157,8 @@ sdk/lib
 node_modules.tar.gz
 /.env_server
 vault-tmp-*.*
+tmp/
+*.secret
 
 ui/next-env.d.ts
 
