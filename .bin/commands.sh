@@ -13,8 +13,13 @@ function Help() {
    echo "  vault:init                                              Fetch initial vault-password from template-apprentissage"
    echo "  vault:edit                                              Edit vault file"
    echo "  vault:password                                          Show vault password"
-   echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
-   echo "  deploy:log:decrypt                        Decrypt Github ansible logs"
+   echo "  deploy:log:decrypt                                      Decrypt Github ansible logs"
+   echo "  deploy:log:encrypt                                      Encrypt Github ansible logs"
+   echo "  deploy:log:decrypt                                      Decrypt Github ansible logs"
+   echo "  backup:bucket:list                                      Get the list of all available archives buckets for select"
+   echo "  backup:list                                             List all available backups from a bucket"
+   echo "  backup:download                                         Download database archive and resolve the GPG file to be exploited by a mongorestore command"
+   echo "  product:validate:env                                    Validate products envs by listing there IPs using ansible"
    echo 
    echo
 }
