@@ -37,6 +37,16 @@ Le backup est réalisé sur un bucket S3. Les credentials utilisé pour la créa
 Créer le bucket S3 puis procéder à la configuration suivante:
 - Activer le versioning et l'encryption du bucket S3 via l'interface OVH
 - Activer le access server logging https://help.ovhcloud.com/csm/fr-public-cloud-storage-s3-server-access-logging?id=kb_article_view&sysparm_article=KB0056623
+  - Créer le fichier policy.json (en remplaçant `bucket_name`)
+    ```json
+    {
+        "LoggingEnabled": {
+          "TargetBucket": "s3-access-log",
+          "TargetPrefix": "{{ bucket_name }}/"
+        }
+    }
+    ```
+  - `aws s3api put-bucket-logging --bucket <bucket> --bucket-logging-status file://policy.json`
 - Activer le lifecycle management pour supprimer les backups de plus de 90 jours:
   - Créer le fichier `lifecycle.json` avec le contenu suivant:
     ```json
