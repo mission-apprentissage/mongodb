@@ -27,7 +27,7 @@
     region: "{{ vault.OVH_S3_REGION }}"
     endpoint_url: "{{ vault.OVH_S3_ENDPOINT }}"
 
-- include_tasks: ./_create_s3_bucket.yml
+- include_tasks: ./_ensure_s3_bucket.yml
   vars:
     bucket_name: "{{ dns_name }}-backups"
     profile: mongodb
