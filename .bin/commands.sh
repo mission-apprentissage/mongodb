@@ -13,8 +13,12 @@ function Help() {
    echo "  vault:init                                              Fetch initial vault-password from template-apprentissage"
    echo "  vault:edit                                              Edit vault file"
    echo "  vault:password                                          Show vault password"
-   echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
-   echo "  deploy:log:decrypt                        Decrypt Github ansible logs"
+   echo "  deploy:log:encrypt                                      Encrypt Github ansible logs"
+   echo "  deploy:log:decrypt                                      Decrypt Github ansible logs"
+   echo "  backup:bucket:list                                      List S3 buckets"
+   echo "  backup:list <bucket>                                    List S3 files in bucket"
+   echo "  backup:download <bucket>/<file>                         Download S3 file and decrypt it"
+   echo "  backup:restore <bucket>/<file> <mongodb_uri>            Restore S3 file to MongoDB"
    echo 
    echo
 }
@@ -81,6 +85,26 @@ function backup:download() {
   mkdir -p "${ROOT_DIR}/tmp"
   "${SCRIPT_DIR}/s3.sh" cp "s3://${FILENAME}" "${ROOT_DIR}/tmp/${FILENAME}"
   "${SCRIPT_DIR}/decrypt.sh" "${ROOT_DIR}/tmp/${FILENAME}" > "${ROOT_DIR}/tmp/${FILENAME}.secret"
+}
+
+function backup:restore() {
+  FILENAME=${1:?"Merci de préciser le fichier"}
+  URI=${2:?"Merci de préciser l'uri de MongoDB de destination"}
+
+  echo "Êtes-vous sûr de vouloir restaurer la base de données ? (y/n)"
+  read -r -n 1 -s answer
+  if [[ $answer != "y" ]]; then
+    echo "Annulation de la restauration"
+    exit 1
+  fi
+
+  delete_backup() {
+    rm -rf "${ROOT_DIR}/tmp/" 
+  }
+  trap delete_backup EXIT
+
+  # backup:download "$FILENAME"
+  cat "${ROOT_DIR}/tmp/${FILENAME}.secret" | docker run --rm -i --network host mongo:7 mongorestore --gzip --drop --archive --uri="$URI"
 }
 
 function product:validate:env() {

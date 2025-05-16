@@ -15,6 +15,10 @@ _mna_completion() {
    "vault\:password:'Get vault password'"
    "deploy\:log\:encrypt:'Encrypt Github ansible logs'"
    "deploy\:log\:dencrypt:'Decrypt Github ansible logs'"
+   "backup\:bucket\:list:'List S3 buckets'"
+   "backup\:list:'List S3 files in bucket'"
+   "backup\:download:'Download S3 file and decrypt it'"
+   "backup\:restore:'Restore S3 file to MongoDB'"
   )
 
   # Set completion behavior based on the current word
