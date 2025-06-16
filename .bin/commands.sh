@@ -103,7 +103,7 @@ function backup:restore() {
   }
   trap delete_backup EXIT
 
-  # backup:download "$FILENAME"
+  backup:download "$FILENAME"
   cat "${ROOT_DIR}/tmp/${FILENAME}.secret" | docker run --rm -i --network host mongo:7 mongorestore --gzip --drop --archive --uri="$URI"
 }
 

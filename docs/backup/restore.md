@@ -27,7 +27,7 @@ Pour restaurer les données il vous suffit de suivre les étapes suivantes:
 1. Lister les buckets disponibles via la commande `.bin/mna backup:bucket:list`.
 2. Liste les sauvegardes disponibles via la commande `.bin/mna backup:list <bucket_name>`.
 3. Choisir le backup à restaurer et noter le nom du fichier.
-4. Lancer la commande `.mna backup:restore <backup_file> <mongoUri>` pour restaurer le backup sur le cluster MongoDB identifié par `mongoUri`.
+4. Lancer la commande `.bin/mna backup:restore <backup_file> <mongoUri>` pour restaurer le backup sur le cluster MongoDB identifié par `mongoUri`.
 
 > [!CAUTION]
 > En cas d'import sur un cluster de test ou local, n'oubliez pas de supprimer les données une fois le test terminé.
