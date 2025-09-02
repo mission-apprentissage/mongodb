@@ -1,13 +1,12 @@
 ---
 - name: "Import the public key used by the package management system"
-  apt_key:
-    url: "https://www.mongodb.org/static/pgp/server-7.0.asc"
-    state: present
-    keyring: /etc/apt/trusted.gpg.d/mongodb-server-7.0.gpg
+  get_url:
+    url: "https://www.mongodb.org/static/pgp/server-8.0.asc"
+    dest: /etc/apt/keyrings/mongodb-server-8.0.asc
 
 - name: "Create a list file for MongoDB"
   apt_repository:
-    repo: "deb [ arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse"
+    repo: "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-8.0.asc ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse"
     state: present
 
 - name: Install MongoDB package
