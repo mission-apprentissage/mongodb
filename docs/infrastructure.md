@@ -33,7 +33,7 @@ La configuration de MongoDB est faite dans le fichier `/etc/mongod.conf`. Pour p
 **Chiffrement des connexions**
 
 - Le chiffrement des connexions est activé dans le fichier de configuration, tous les accès à la base de données doivent être chiffrés.
-- Le certificat utilisé est `/mnt/data/mongodb.pem` 
+- Le certificat utilisé est `/mnt/data/mongodb.pem`
 - Les clients ne doivent pas fournir de certificat pour se connecter.
 - Les protocoles `TLSv1.0` et `TLSv1.1` sont désactivés.
 

@@ -50,8 +50,8 @@ function deploy:remove:node() {
 
 function vault:init() {
   # Ensure Op is connected
-  op --account mission-apprentissage account get > /dev/null
-  op --account mission-apprentissage document get ".vault-password-tmpl" --vault "mna-vault-passwords-common" > "${ROOT_DIR}/.infra/vault/.vault-password.gpg"
+  op --account "${OP_ACCOUNT}" account get > /dev/null
+  op --account "${OP_ACCOUNT}" document get ".vault-password-tmpl" --vault "${OP_VAULT_NAME}" > "${ROOT_DIR}/.infra/vault/.vault-password.gpg"
 }
 
 function vault:edit() {
@@ -72,18 +72,24 @@ function deploy:log:decrypt() {
 }
 
 function backup:bucket:list() {
-  "${SCRIPT_DIR}/s3.sh" ls --human-readable
+  ENV=${1:?"Merci de préciser l'environement"}
+  product:validate:env "$ENV"
+  "${SCRIPT_DIR}/s3.sh" "$ENV" ls --human-readable
 }
 
 function backup:list() {
+  ENV=${1:?"Merci de préciser l'environement"}
+  product:validate:env "$ENV"
   PREFIX=${1:?"Merci de préciser le path S3 (utiliser la commande 'backup:bucket:list' pour obtenir la liste des buckets)"}
-  "${SCRIPT_DIR}/s3.sh" ls --human-readable "s3://${PREFIX}"
+  "${SCRIPT_DIR}/s3.sh" "$ENV" ls --human-readable "s3://${PREFIX}"
 }
 
 function backup:download() {
+  ENV=${1:?"Merci de préciser l'environement"}
+  product:validate:env "$ENV"
   FILENAME=${1:?"Merci de préciser le fichier"}
   mkdir -p "${ROOT_DIR}/tmp"
-  "${SCRIPT_DIR}/s3.sh" cp "s3://${FILENAME}" "${ROOT_DIR}/tmp/${FILENAME}"
+  "${SCRIPT_DIR}/s3.sh" "$ENV" cp "s3://${FILENAME}" "${ROOT_DIR}/tmp/${FILENAME}"
   "${SCRIPT_DIR}/decrypt.sh" "${ROOT_DIR}/tmp/${FILENAME}" > "${ROOT_DIR}/tmp/${FILENAME}.secret"
 }
 

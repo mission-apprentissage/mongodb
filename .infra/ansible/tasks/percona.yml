@@ -17,7 +17,7 @@
 
 - name: "Register PMM client"
   ansible.builtin.shell:
-    cmd: "pmm-admin config --server-insecure-tls --server-url \"https://admin:{{vault.PERCONA_PASSWORD }}@percona.apprentissage.beta.gouv.fr:444\" --force"
+    cmd: 'pmm-admin config --server-insecure-tls --server-url "https://admin:{{vault[env_type].PERCONA_PASSWORD }}@{{ percona }}" --force'
   when: pmm_status.rc != 0
 
 - name: "Check installed PMM client services"
