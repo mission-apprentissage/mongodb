@@ -22,10 +22,10 @@
   ansible.builtin.command: aws configure set {{ item.key }} {{ item.value }} --profile mongodb
   become: true
   with_dict:
-    aws_access_key_id: "{{ vault.OVH_S3_API_KEY }}"
-    aws_secret_access_key: "{{ vault.OVH_S3_API_SECRET }}"
-    region: "{{ vault.OVH_S3_REGION }}"
-    endpoint_url: "{{ vault.OVH_S3_ENDPOINT }}"
+    aws_access_key_id: "{{ vault[env_type].S3_API_KEY }}"
+    aws_secret_access_key: "{{ vault[env_type].S3_API_SECRET }}"
+    region: "{{ vault[env_type].S3_REGION }}"
+    endpoint_url: "{{ vault[env_type].S3_ENDPOINT }}"
 
 - include_tasks: ./_ensure_s3_bucket.yml
   vars:

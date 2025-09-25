@@ -18,7 +18,7 @@ read -p "Name of the database to migrate from: " dbName
 read -p "Name of the database to migrate to: " dbNameTarget
 
 sourceUri="mongodb+srv://${username}:${password}@${sourceHost}/?tls=true"
-targetUri="mongodb+srv://root:{{vault[env_type].root}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true"
+targetUri="mongodb+srv://root:{{vault[env_type].root}}@{{ cluster_dns }}/?tls=true"
 
 SECONDS=0
 mongodump --ssl --uri="${sourceUri}" --db="${dbName}" --archive --authenticationDatabase=admin | mongorestore --archive --nsInclude="${dbName}.*" --nsFrom="${dbName}.*" --nsTo="${dbNameTarget}.*" --uri="${targetUri}" --drop

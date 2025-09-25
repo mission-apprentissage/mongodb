@@ -29,13 +29,13 @@ function runPlaybook() {
 
   if [[ -z "${ANSIBLE_REMOTE_USER:-}" ]]; then
     if [[ $* != *"--user"* ]]; then
-        local username=$(op --account mission-apprentissage read op://Private/${PRODUCT_NAME}-$ENV_FILTER/username 2> /dev/null);
+        username=$(op --account "${OP_ACCOUNT}" read op://Private/${PRODUCT_NAME}-$ENV_FILTER/username 2> /dev/null);
         if [ -z $username ]; then
           echo "Si vous avez 1password CLI, il est possible de récupérer le username automatiquement"
           echo "Pour cela, ajouter le dans le vault "Private" l'item ${PRODUCT_NAME}-$ENV_FILTER avec le champs username"
         else
           echo "Récupération du username depuis 1password" 
-          ansible_extra_opts+=("--user" $username)
+          ansible_extra_opts+=(--user "$username")
         fi;
     fi
   else
