@@ -11,8 +11,8 @@
 
 - name: Install MongoDB package
   apt:
-    name: mongodb-org
-    state: present
+    name: mongodb-org*
+    state: latest
     update_cache: yes
 
 - name: "Setup numactl"
