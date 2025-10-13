@@ -10,6 +10,9 @@ Group=mongodb
 EnvironmentFile=-/etc/default/mongod
 Restart=on-failure
 RestartSec=10
+StartLimitBurst=4
+StartLimitIntervalSec=120
+
 Environment="MONGODB_CONFIG_OVERRIDE_NOFORK=1"
 # https://www.mongodb.com/docs/manual/administration/production-notes/#configuring-numa-on-linux
 ExecStart=/usr/bin/numactl --interleave=all /usr/bin/mongod --config /etc/mongod.conf
