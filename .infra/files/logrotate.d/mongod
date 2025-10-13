@@ -7,7 +7,7 @@
     notifempty
     missingok
     postrotate
-      /opt/app/scripts/rotate-mongod.sh
+      systemctl kill -s USR1 mongod
     endscript
 
     create 600 mongodb mongodb
