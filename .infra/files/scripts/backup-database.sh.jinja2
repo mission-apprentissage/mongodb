@@ -5,8 +5,7 @@ set -euo pipefail
 echo "Creating and uploading backup..."
 
 mongodump --uri="mongodb+srv://backup:{{ vault[env_type].backup }}@mongodb-{{ env_type }}.apprentissage.beta.gouv.fr/?tls=true&readPreference=secondaryPreferred" \
-  --oplog --gzip --archive 2>dev/null \
+  --oplog --gzip --archive 2>/dev/null \
   | /opt/app/tools/gpg/encrypt.sh 2>/dev/null \
   | s3cmd -q put - "s3://{{ dns_name }}-backups/$(date +%Y-%m-%d_%H-%M-%S).gpg"
 
-/opt/app/scripts/upload-backups.sh
