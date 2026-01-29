@@ -1,31 +1,18 @@
 ---
-- name: Check if AWS CLI package is installed
-  ansible.builtin.stat:
-    path: /usr/local/aws-cli
-  register: aws_cli_installed
 
-- name: Download and Unarchive AWS CLI package
-  ansible.builtin.unarchive:
-    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-    dest: /tmp
-    remote_src: yes
-    extra_opts:
-      - -O /tmp/awscliv2.zip
-  when: not aws_cli_installed.stat.exists
+- name: Install s3cmd package
+  ansible.builtin.apt:
+    name: s3cmd
+    state: latest
+    update_cache: yes
 
-- name: Install AWS CLI package.
-  ansible.builtin.command: bash /tmp/aws/install
-  become: true
-  when: not aws_cli_installed.stat.exists
-
-- name: Configure AWS
-  ansible.builtin.command: aws configure set {{ item.key }} {{ item.value }} --profile mongodb
-  become: true
-  with_dict:
-    aws_access_key_id: "{{ vault.OVH_S3_API_KEY }}"
-    aws_secret_access_key: "{{ vault.OVH_S3_API_SECRET }}"
-    region: "{{ vault.OVH_S3_REGION }}"
-    endpoint_url: "{{ vault.OVH_S3_ENDPOINT }}"
+- name: Configure s3cmd
+  ansible.builtin.template:
+    src: "{{ playbook_dir }}/../files/configs/s3cmd/s3cfg.template.jinja2"
+    dest: "/root/.s3cfg"
+    owner: root
+    group: root
+    mode: 0700
 
 - include_tasks: ./_ensure_s3_bucket.yml
   vars:

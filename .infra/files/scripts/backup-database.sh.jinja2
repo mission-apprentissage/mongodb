@@ -1,40 +1,11 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
-readonly BACKUP_LOCAL_DIR="/opt/app/mongodb/backups"
-readonly FILENAME="$(date +%Y-%m-%d_%H-%M-%S).gpg"
-readonly BACKUP_FILE="${BACKUP_LOCAL_DIR}/${FILENAME}"
+echo "Creating and uploading backup..."
 
-export AWS_PROFILE="mongodb"
+mongodump --uri="mongodb+srv://backup:{{ vault[env_type].backup }}@mongodb-{{ env_type }}.apprentissage.beta.gouv.fr/?tls=true&readPreference=secondaryPreferred" \
+  --oplog --gzip --archive 2>/dev/null \
+  | /opt/app/tools/gpg/encrypt.sh 2>/dev/null \
+  | s3cmd -q put - "s3://{{ dns_name }}-backups/$(date +%Y-%m-%d_%H-%M-%S).gpg"
 
-function deleteTmpBackup() {
-  echo "Removing temporary backup..."
-  rm -f /tmp/backup.gpg
-}
-
-trap deleteTmpBackup EXIT
-
-function backup() {
-  echo "Creating backup..."
-  mkdir -p "${BACKUP_LOCAL_DIR}"
-  mongodump --uri="mongodb+srv://backup:{{vault[env_type].backup}}@mongodb-{{env_type}}.apprentissage.beta.gouv.fr/?tls=true&readPreference=secondaryPreferred" --oplog --gzip --archive \
-  | bash "/opt/app/tools/gpg/encrypt.sh" > /tmp/backup.gpg
-  mv /tmp/backup.gpg "${BACKUP_FILE}"
-}
-
-function upload(){
-  # upload gpg file to S3
-  echo "Uploading backup to S3..."
-  aws s3 cp "$BACKUP_FILE" "s3://{{ dns_name }}-backups/${FILENAME}"
-}
-
-function delete(){
-  echo "Removing MongoDB backups..."
-  rm -f "${BACKUP_FILE}"
-}
-
-backup
-upload
-delete
-
-/opt/app/scripts/upload-backups.sh

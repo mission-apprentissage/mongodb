@@ -8,15 +8,18 @@ readonly BACKUP_FILE="${BACKUP_LOCAL_DIR}/${FILENAME}"
 export AWS_PROFILE="mongodb"
 
 function uploadBackups(){
-  # list all files in the backup directory
+
   ls -1 "${BACKUP_LOCAL_DIR}" | while read -r file; do
-    # check if the file is not already uploaded
-    if ! aws s3 ls "s3://{{ dns_name }}-backups/${file}" &> /dev/null; then
+
+    if ! s3cmd -q ls "s3://{{ dns_name }}-backups/${file}" &> /dev/null; then
       echo "Uploading previous failed backup: ${file}"
-      aws s3 cp "${BACKUP_LOCAL_DIR}/${file}" "s3://{{ dns_name }}-backups/${file}"
+      s3cmd -q put "${BACKUP_LOCAL_DIR}/${file}" "s3://{{ dns_name }}-backups/${file}"
     fi
+
     rm -f "${BACKUP_LOCAL_DIR}/${file}"
+
   done
+
 }
 
 uploadBackups
