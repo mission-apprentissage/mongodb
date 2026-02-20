@@ -11,9 +11,12 @@ readonly ENV_IP=$(ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansibl
 
 if [ "$ENV_IP" == "null" ]; then
 
+  echo "debug 1"
+
   if [ -z "${CI:-}" ]; then
     exit 1
   else
+    echo "debug 2"
     exit 0
   fi
 
