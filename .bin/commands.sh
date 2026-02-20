@@ -35,6 +35,7 @@ _meta_help["app:deploy:cluster:node:update"]="Update cluster"
 
 function app:deploy:cluster:node:update() {
   "${SCRIPT_DIR}/product-validate-env.sh" "$1"
+  echo "debug ###"
   "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=update"
 }
 
