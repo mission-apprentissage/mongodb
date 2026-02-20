@@ -62,7 +62,7 @@ jobs:
               IdentityFile ~/.ssh/github_actions
 
       - name: Run playbook
-        run: .bin/mna-mongodb app:deploy:node:update ${{ inputs.environment }}
+        run: .bin/mna-mongodb app:deploy:cluster:node:update ${{ inputs.environment }}
         env:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
