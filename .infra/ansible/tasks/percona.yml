@@ -17,7 +17,7 @@
 
 - name: "Register PMM client"
   ansible.builtin.shell:
-    cmd: "pmm-admin config --server-insecure-tls --server-url \"https://admin:{{vault.PERCONA_PASSWORD }}@percona.apprentissage.beta.gouv.fr:444\" --force"
+    cmd: "pmm-admin config --server-insecure-tls --server-url \"https://admin:{{PERCONA_PASSWORD }}@percona.apprentissage.beta.gouv.fr:444\" --force"
   when: pmm_status.rc != 0
 
 - name: "Check installed PMM client services"
@@ -27,5 +27,5 @@
 
 - name: "Register MongoDB service"
   ansible.builtin.shell:
-    cmd: "pmm-admin add mongodb --username pmm --password \"{{ vault[env_type].pmm }}\" --cluster {{env_type}} --tls {{host_name}} {{dns_name}}:27017"
+    cmd: "pmm-admin add mongodb --username pmm --password \"{{ pmm }}\" --cluster {{env_type}} --tls {{host_name}} {{dns_name}}:27017"
   when: pmm_services.stdout.find('mongodb_exporter') == -1

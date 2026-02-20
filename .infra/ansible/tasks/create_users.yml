@@ -13,14 +13,14 @@
 
 - name: "Create custom roles"
   include_tasks: create_role.yml
-  loop: "{{vault[env_type].roles}}"
+  loop: "{{roles}}"
   loop_control:
     loop_var: role
-  when: "{{vault[env_type].roles | default('') | length > 0 }}"
+  when: "{{roles | default('') | length > 0 }}"
 
 - name: "Create users"
   include_tasks: create_user.yml
-  loop: "{{vault[env_type].users}}"
+  loop: "{{users}}"
   loop_control:
     loop_var: user
 
@@ -29,7 +29,7 @@
   vars:
     user:
       name: "root"
-      password: "{{vault[env_type].root}}"
+      password: "{{root}}"
       database: "admin"
       roles:
         - role: "root"
@@ -40,7 +40,7 @@
   vars:
     user:
       name: "backup"
-      password: "{{vault[env_type].backup}}"
+      password: "{{backup}}"
       database: "admin"
       roles:
         - role: "any"
@@ -51,7 +51,7 @@
   vars:
     user:
       name: "pmm"
-      password: "{{vault[env_type].pmm}}"
+      password: "{{pmm}}"
       database: "admin"
       roles:
         - role: "any"

@@ -4,7 +4,7 @@
 
 Installez [GnuPG](https://gnupg.org/download/)
 
-> Sur OS X vous pouvez utiliser `brew install gnupg`
+> Sur **macOS** vous pouvez utiliser `brew install gnupg`
 
 ## Création de la Clé
 
@@ -43,11 +43,9 @@ Voici les étapes pour créer votre clé GPG :
 
    Ces deux fichiers peuvent être sauvegardés, par exemple, sur une clé USB.
 
-5. Communiquez votre clé à votre équipe afin d'être autorisé à décrypter le vault.
+5. Communiquez votre clé à votre équipe afin d'être autorisé à déchiffrer les fichiers **SOPS**.
 
 **Une fois autorisé, vous aurez accès aux fichiers suivants :**
-
-- `.infra/vault/.vault-password.gpg`
 
 ## Utilisation du capteur bio-metrique
 
@@ -55,7 +53,7 @@ Il est possible d'utiliser le capteur biometrique pour éviter de taper votre PI
 
 Pour cela il faut installer le programme [pinentry](https://github.com/GPGTools/pinentry)
 
-### OS X
+### macOS
 
 En se basant sur le [tutoriel](https://medium.com/@jma/setup-gpg-for-git-on-macos-4ad69e8d3733)
 

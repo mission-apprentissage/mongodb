@@ -19,27 +19,22 @@ Veuillez suivre la procédure sur [Création d'une instance et d'un volume exter
 
 ### Définition de des variables
 
-**vault.yml**
-
-Ajouter les secrets liés à l'environnement dans le vault via `.bin/mna vault:edit`:
+Ajouter les secrets liés à l'environnement dans le fichier **SOPS** via `.bin/mna vault:edit <env>`:
 
 ```yml
-vault:
-    <environnement>:
-        KEYFILE: <string>
-        root: <string>
-        backup: <string>
-        pmm: <string>
-        users:
-            - name: <string>
-                password: <string>
-                database: <string>
-                roles: <string>
+KEYFILE: <string>
+root: <string>
+backup: <string>
+pmm: <string>
+users:
+    - name: <string>
+        password: <string>
+        database: <string>
+        roles: <string>
 ```
 
 Avec:
 
-- `<environnement>`: Nom de l'environnement
 - `KEYFILE`: créer un secret via `pwgen -s 1024 1`
 - `root`: Mot de passe de l'utilisateur `root` de la base de données `pwgen -s 64 1`
 - `backup`: Mot de passe de l'utilisateur `backup` de la base de données `pwgen -s 64 1` utilisé pour les opérations de backup et restauration.
@@ -77,7 +72,7 @@ Il faut également créer un enregistrement de type `TXT` tel que:
 3. Vérifiez le status du replica set avec la commande `/opt/app/scripts/mongo.sh --eval 'db.adminCommand({replSetGetStatus: 1})'`. Vous devriez voir votre noeud, et avec le status `PRIMARY`.
 4. Redémarrer le serveur pour appliquer tous les changements: `sudo reboot`
 5. Connectez-vous au VPN
-6. La connection au serveur via: `mongodb+srv//root:<password>@mongodb-<environnement>.apprentissage.beta.gouv.fr/?tls` avec `<password>`: Le mot de passe root tel que défini dans le vault.
+6. La connection au serveur via: `mongodb+srv//root:<password>@mongodb-<environnement>.apprentissage.beta.gouv.fr/?tls` avec `<password>`: Le mot de passe root tel que défini dans le fichier **SOPS** correspondand à l'environnement.
 
 ## Noeuds suivants
 

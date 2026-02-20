@@ -17,7 +17,7 @@ Veuillez lancer la commande `.bin/mna deploy:extra:node <environnement>_<n>` pou
 3. Vérifiez le status du replica set avec la commande `/opt/app/scripts/mongo.sh --eval 'db.adminCommand({replSetGetStatus: 1})'`. Vous devriez voir le nouveau noeud, et attendre que le status soit `PRIMARY` ou `SECONDARY`, si le status est 'STARTUP2' vous pouvez obtenir une estimation du temps restant avec la valeur `initialSyncStatus`
 4. Redémarrer le serveur pour appliquer tous les changements: `sudo reboot`
 5. Connectez-vous au VPN
-6. La connection au serveur via: `mongodb+srv//root:<password>@mongodb-<environnement>.apprentissage.beta.gouv.fr/?tls` avec `<password>`: Le mot de passe root tel que défini dans le vault.
+6. La connection au serveur via: `mongodb+srv//root:<password>@mongodb-<environnement>.apprentissage.beta.gouv.fr/?tls` avec `<password>`: Le mot de passe root tel que défini dans le fichier **SOPS**.
 7. Vérifiez que le noeud a bien redémarré via la commande `rs.status()` dans le shell mongo.
 
 ## Enregistrement DNS SRV
