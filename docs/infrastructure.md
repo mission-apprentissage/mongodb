@@ -28,7 +28,7 @@ La configuration de MongoDB est faite dans le fichier `/etc/mongod.conf`. Pour p
 **Authentification**
 
 - L'authentification est activée dans le fichier de configuration, tous les accès à la base de données doivent être authentifiés.
-- Les membres du cluster sont authentifiés avec le keyfile `/mnt/data/keyfile`. Le keyfile provient du vault et est spécifique à chaque cluster.
+- Les membres du cluster sont authentifiés avec le keyfile `/mnt/data/keyfile`. Le keyfile provient du fichier **SOPS** et est spécifique à chaque cluster.
 
 **Chiffrement des connexions**
 
@@ -133,7 +133,7 @@ L'enregistrement SRV est configuré dans le DNS de la zone `apprentissage.beta.g
 
 ### Gestion des utilisateurs
 
-La liste des utilisateurs est définie dans le vault sous la clé `vault.<environnement>.users`, la configuration de chaque utilisateur est la suivante:
+La liste des utilisateurs est définie dans le fchier **SOPS** sous la clé `users`, la configuration de chaque utilisateur est la suivante:
 
 - `username`: le nom d'utilisateur
 - `password`: le mot de passe

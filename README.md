@@ -12,7 +12,7 @@ MongoDB est installé sur les serveurs via les packages officiels de MongoDB en 
 
 La configuration de MongoDB comprend:
 
-- La création des utilisateurs via le vault
+- La création des utilisateurs
 - La création du keyfile pour l'authentification des membres du cluster
 - La configuration du fichier de configuration de MongoDB avec:
   - L'utilisation du keyfile pour l'authentification interne

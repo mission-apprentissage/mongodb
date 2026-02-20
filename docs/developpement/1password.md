@@ -1,9 +1,5 @@
 # 1Password
 
-## Accès
-
-Pour récupérer les secrets, vous devez avoir accès au vault 1password `mna-vault-passwords-common`. Rapprochez vous de l'équipe transverse pour y avoir accès.
-
 ## 1Password CLI
 
 Installez [1Password CLI](https://developer.1password.com/docs/cli/get-started/)

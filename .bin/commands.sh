@@ -2,122 +2,75 @@
 
 set -euo pipefail
 
-function Help() {
-   # Display Help
-   echo "Commands"
-   echo "  bin:setup                                               Installs ${PRODUCT_NAME} binary with zsh completion on system"
-   echo "  deploy:initial:node <env>                               Création d'un nouveau cluster <env>"
-   echo "  deploy:update:node <env>                                Mise à jour du noeud <env>"
-   echo "  deploy:extra:node <env>                                 Ajout du noeud à un cluster existant <env>"
-   echo "  deploy:remove:node <env>                                Suppression du noeud <env>"
-   echo "  vault:init                                              Fetch initial vault-password from template-apprentissage"
-   echo "  vault:edit                                              Edit vault file"
-   echo "  vault:password                                          Show vault password"
-   echo "  deploy:log:encrypt                                      Encrypt Github ansible logs"
-   echo "  deploy:log:decrypt                                      Decrypt Github ansible logs"
-   echo "  backup:bucket:list                                      List S3 buckets"
-   echo "  backup:list <bucket>                                    List S3 files in bucket"
-   echo "  backup:download <bucket>/<file>                         Download S3 file and decrypt it"
-   echo "  backup:restore <bucket>/<file> <mongodb_uri>            Restore S3 file to MongoDB"
-   echo 
-   echo
+if [ ! -f "${ROOT_DIR}/.bin/shared/commands.sh" ]; then
+
+  echo "Mise à jour du sous-module mna-shared-bin"
+
+  git submodule update --init "${ROOT_DIR}/.bin/shared"
+
+fi
+
+. "${ROOT_DIR}/.bin/shared/commands.sh"
+
+unset _meta_help["app:deploy"]
+unset app:deploy
+unset _meta_help["seed:update"]
+unset seed:update
+unset _meta_help["seed:apply"]
+unset seed:apply
+unset _meta_help["docker:login"]
+unset docker:login
+
+################################################################################
+# Non-shared commands
+################################################################################
+
+_meta_help["app:deploy:cluster:init"]="Init a new cluster"
+
+function app:deploy:cluster:init() {
+  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=new-cluster"
 }
 
-function bin:setup() {
-  sudo ln -fs "${ROOT_DIR}/.bin/mna" "/usr/local/bin/mna-${PRODUCT_NAME}"
+_meta_help["app:deploy:cluster:node:update"]="Update cluster"
 
-  sudo mkdir -p /usr/local/share/zsh/site-functions
-  sudo ln -fs "${ROOT_DIR}/.bin/zsh-completion" "/usr/local/share/zsh/site-functions/_${PRODUCT_NAME}"
-  sudo rm -f ~/.zcompdump*
+function app:deploy:cluster:node:update() {
+  "${SCRIPT_DIR}/product-validate-env.sh" "$1"
+  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=update"
 }
 
-function deploy:update:node() {
-  product:validate:env "$1"
-  "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=update"
+_meta_help["app:deploy:cluster:node:add"]="Add node to existing cluster"
+
+function app:deploy:cluster:node:add() {
+  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=new-member"
 }
 
-function deploy:initial:node() {
-  "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=new-cluster"
+_meta_help["app:deploy:cluster:node:remove"]="Delete node from cluster"
+
+function app:deploy:cluster:node:remove() {
+  "${SCRIPT_SHARED_DIR}/app:deploy:node-remove.sh" "$@"
 }
 
-function deploy:extra:node() {
-  "${SCRIPT_DIR}/deploy-app.sh" "$@" --extra-vars "context=new-member"
-}
-
-function deploy:remove:node() {
-  "${SCRIPT_DIR}/remove-node.sh" "$@"
-}
-
-function vault:init() {
-  # Ensure Op is connected
-  op --account mission-apprentissage account get > /dev/null
-  op --account mission-apprentissage document get ".vault-password-tmpl" --vault "mna-vault-passwords-common" > "${ROOT_DIR}/.infra/vault/.vault-password.gpg"
-}
-
-function vault:edit() {
-  editor=${EDITOR:-'code -w'}
-  EDITOR=$editor "${SCRIPT_DIR}/edit-vault.sh" "$@"
-}
-
-function vault:password() {
-  "${SCRIPT_DIR}/get-vault-password-client.sh" "$@"
-}
-
-function deploy:log:encrypt() {
-  (cd "$ROOT_DIR" && "${SCRIPT_DIR}/deploy-log-encrypt.sh" "$@")
-}
-
-function deploy:log:decrypt() {
-  (cd "$ROOT_DIR" && "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@")
-}
+_meta_help["backup:bucket:list"]="List S3 buckets"
 
 function backup:bucket:list() {
   "${SCRIPT_DIR}/s3.sh" ls --human-readable
 }
 
+_meta_help["backup:list"]="List S3 files in bucket"
+
 function backup:list() {
-  PREFIX=${1:?"Merci de préciser le path S3 (utiliser la commande 'backup:bucket:list' pour obtenir la liste des buckets)"}
-  "${SCRIPT_DIR}/s3.sh" ls --human-readable "s3://${PREFIX}"
+  "${SCRIPT_DIR}/backup-list.sh" "$@"
 }
+
+_meta_help["backup:download"]="Download S3 file and decrypt it"
 
 function backup:download() {
-  FILENAME=${1:?"Merci de préciser le fichier"}
-  mkdir -p "${ROOT_DIR}/tmp"
-  "${SCRIPT_DIR}/s3.sh" cp "s3://${FILENAME}" "${ROOT_DIR}/tmp/${FILENAME}"
-  "${SCRIPT_DIR}/decrypt.sh" "${ROOT_DIR}/tmp/${FILENAME}" > "${ROOT_DIR}/tmp/${FILENAME}.secret"
+  "${SCRIPT_DIR}/backup-download.sh" "$@"
 }
+
+_meta_help["backup:restore"]="Restore S3 file to MongoDB"
 
 function backup:restore() {
-  FILENAME=${1:?"Merci de préciser le fichier"}
-  URI=${2:?"Merci de préciser l'uri de MongoDB de destination"}
-
-  echo "Êtes-vous sûr de vouloir restaurer la base de données ? (y/n)"
-  read -r -n 1 -s answer
-  if [[ $answer != "y" ]]; then
-    echo "Annulation de la restauration"
-    exit 1
-  fi
-
-  delete_backup() {
-    rm -rf "${ROOT_DIR}/tmp/" 
-  }
-  trap delete_backup EXIT
-
-  backup:download "$FILENAME"
-  cat "${ROOT_DIR}/tmp/${FILENAME}.secret" | docker run --rm -i --network host mongo:7 mongorestore --gzip --drop --archive --uri="$URI"
+  "${SCRIPT_DIR}/backup-restore.sh" "$@"
 }
 
-function product:validate:env() {
-  # If we're able to get ip then we're good
-  local env_ip=$(ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible-inventory --list -l "$1" | jq -r ".${1}.hosts[0]")
-
-  echo $env_ip
-  if [[ "$env_ip" == "null" ]]; then
-    if [[ -z "${CI:-}" ]]; then
-      exit 1;
-    else
-      # If we are in CI just exit 0 to allow batch
-      exit 0;
-    fi;
-  fi;
-}
