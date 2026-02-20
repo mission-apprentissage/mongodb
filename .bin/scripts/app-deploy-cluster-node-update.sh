@@ -18,4 +18,5 @@ if [ "$ENV_IP" == "null" ]; then
 
 fi
 
+echo "debug 1"
 "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=update"
