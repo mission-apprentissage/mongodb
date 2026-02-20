@@ -2,11 +2,16 @@
 
 set -euo pipefail
 
-readonly env_ip=$(ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible-inventory --list -l "$1" | jq -r ".${1}.hosts[0]")
+readonly ENV=${1:?"Merci de préciser le nom de l'environnement"}
 
-echo $env_ip
+BIN_DIR="$(dirname -- "$( readlink -f -- "$0"; )")"
+ROOT_DIR="${BIN_DIR}/../.."
 
-if [[ "$env_ip" == "null" ]]; then
+readonly ENV_IP=$(ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible-inventory --list -l "$1" 2>/dev/null | jq -r ".${1}.hosts[0]")
+
+echo $ENV_IP
+
+if [[ "$ENV_IP" == "null" ]]; then
 
   if [[ -z "${CI:-}" ]]; then
     exit 1
