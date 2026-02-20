@@ -14,9 +14,10 @@ if [ "$ENV_IP" == "null" ]; then
 
   if [ -z "${CI:-}" ]; then
     exit 1
+  else
+    exit 0
   fi
 
 fi
 
-echo "debug 1"
 "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=update"
