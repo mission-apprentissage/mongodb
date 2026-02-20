@@ -34,9 +34,7 @@ function app:deploy:cluster:init() {
 _meta_help["app:deploy:cluster:node:update"]="Update cluster"
 
 function app:deploy:cluster:node:update() {
-  "${SCRIPT_DIR}/product-validate-env.sh" "$1"
-  echo "debug ###"
-  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=update"
+  "${SCRIPT_DIR}/app-deploy-cluster-node-update.sh" "$@"
 }
 
 _meta_help["app:deploy:cluster:node:add"]="Add node to existing cluster"
@@ -48,7 +46,7 @@ function app:deploy:cluster:node:add() {
 _meta_help["app:deploy:cluster:node:remove"]="Delete node from cluster"
 
 function app:deploy:cluster:node:remove() {
-  "${SCRIPT_SHARED_DIR}/app:deploy:node-remove.sh" "$@"
+  "${SCRIPT_DIR}/app-deploy-cluster-node-remove.sh" "$@"
 }
 
 _meta_help["backup:bucket:list"]="List S3 buckets"
