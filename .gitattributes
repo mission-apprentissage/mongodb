@@ -75,3 +75,9 @@
 *.otf       binary
 *.woff      binary
 *.woff2     binary
+.infra/env.global.yml diff=sopsdiffer
+.infra/env.api.yml diff=sopsdiffer
+.infra/env.bal.yml diff=sopsdiffer
+.infra/env.lba.yml diff=sopsdiffer
+.infra/env.recette.yml diff=sopsdiffer
+.infra/env.tdb.yml diff=sopsdiffer
