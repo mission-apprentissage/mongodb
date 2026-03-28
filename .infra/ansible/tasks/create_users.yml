@@ -16,7 +16,7 @@
   loop: "{{roles}}"
   loop_control:
     loop_var: role
-  when: "{{roles | default('') | length > 0 }}"
+  when: "roles | default('') | length > 0"
 
 - name: "Create users"
   include_tasks: create_user.yml

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-CERT_DIR="/opt/app/system/certbot/conf/live/{{dns_name}}"
+CERT_DIR="/opt/app/pki/certs/{{ dns_name }}"
 CERT_FILE="${CERT_DIR}/fullchain.pem"
 KEY_FILE="${CERT_DIR}/privkey.pem"
 

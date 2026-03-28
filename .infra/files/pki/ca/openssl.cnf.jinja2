@@ -1,0 +1,72 @@
+[ default ]
+ca                      = ca
+dir                     = /opt/app/pki/
+
+[ req ]
+encrypt_key             = yes
+default_md              = sha256
+utf8                    = yes
+string_mask             = utf8only
+prompt                  = no
+distinguished_name      = req_intermediate_ca_dn
+req_extensions          = req_intermediate_ca_ext
+
+[ req_intermediate_ca_dn ]
+countryName             = "FR"
+organizationName        = "Mission Apprentissage"
+commonName              = "MongoDB {{ host_name }} Intermediate CA"
+
+[ req_intermediate_ca_ext ]
+keyUsage                = critical,keyCertSign,cRLSign
+basicConstraints        = critical,CA:true,pathlen:0
+subjectKeyIdentifier    = hash
+nameConstraints = permitted;DNS:{{ dns_name }}
+
+[ ca ]
+default_ca              = intermediate_ca
+
+[ intermediate_ca ]
+certificate             = $dir/ca/ca.pem
+private_key             = $dir/ca/private/ca.key
+new_certs_dir           = $dir/ca/certs
+serial                  = $dir/ca/db/ca.crt.srl
+database                = $dir/ca/db/ca.db
+rand_serial             = yes
+unique_subject          = no
+default_days            = 2
+default_md              = sha256
+policy                  = intermediate_ca_policy
+email_in_dn             = no
+preserve                = no
+name_opt                = ca_default
+cert_opt                = ca_default
+copy_extensions         = copy
+x509_extensions         = intermediate_ca_ext
+
+crl_extensions          = crl_ext
+crlnumber               = $dir/ca/db/ca.crl.srl
+default_crl_days        = 365
+crl                     = $dir/ca/db/ca.crl.pem
+
+[ intermediate_ca_ext ]
+keyUsage                = critical,keyCertSign,cRLSign
+basicConstraints        = critical,CA:true,pathlen:0
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid
+nameConstraints = permitted;DNS:{{ dns_name }}
+
+[ intermediate_ca_policy ]
+countryName             = match
+organizationName        = match
+commonName              = supplied
+
+[ mtls_ext ]
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid
+keyUsage = critical, digitalSignature
+extendedKeyUsage = serverAuth,clientAuth
+subjectAltName = DNS:{{ dns_name }}
+
+[ crl_ext ]
+authorityKeyIdentifier=keyid:always

@@ -29,6 +29,9 @@
     - name: "Installation des certificats TLS"
       include_tasks: ./tasks/install_tls.yml
 
+    - name: "Installation d'une autorité de certification X.509 intermédiaire"
+      include_tasks: ./tasks/install_ca.yml
+
     - name: "Démarrage de mongodb"
       include_tasks: ./tasks/start_mongodb.yml
 
@@ -45,13 +48,13 @@
       include_tasks: ./tasks/create_users.yml
       when: context == "new-cluster" or context == "update"
     
-    - name: "Configuration de la sauvegarde de la base de données"
-      import_tasks: ./tasks/configure-mongodb-backup.yml
-      when: backup_enable | default(false) | bool
+#    - name: "Configuration de la sauvegarde de la base de données"
+#      import_tasks: ./tasks/configure-mongodb-backup.yml
+#      when: backup_enable | default(false) | bool
 
-    - name: "Percona"
-      include_tasks: ./tasks/percona.yml
-
+#    - name: "Percona"
+#      include_tasks: ./tasks/percona.yml
+#
     - name: Check if reboot required
       stat:
         path: /var/run/reboot-required

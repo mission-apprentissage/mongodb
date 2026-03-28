@@ -1,0 +1,35 @@
+---
+- name: "Generate MongoDB X.509 certificate"
+  shell:
+    cmd: '/opt/app/scripts/ca.sh renew {{ dns_name }}'
+
+- name: "Create CRON task to renew MongoDB X.509 certificate"
+  ansible.builtin.cron:
+    name: "mongodb_tls"
+    minute: "0"
+    hour: "4"
+    job: "bash /opt/app/scripts/ca.sh renew {{ dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'MongoDB - Renewal of the private X.509 certificate' -v $?"
+
+- name: "Put MongoDB root CA X.509 certificate into the trust store"
+  ansible.builtin.copy:
+    src:  "{{ inventory_dir }}/../files/pki/root-ca.crt"
+    dest: "/usr/local/share/ca-certificates"
+    mode: "0644"
+    owner: root
+
+- name: "Put MongoDB Intermediate CA X.509 certificates into the trust store"
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "/usr/local/share/ca-certificates"
+    mode: "0644"
+    owner: root
+  with_filetree: "{{ inventory_dir }}/../files/pki"
+  when:
+    - item.state == 'file'
+    - (item.path | regex_search('mongodb-' ~ env_type ~ '-.*.crt')) is truthy
+
+- name: "Update X.509 certificate trust store"
+  shell:
+    cmd: 'update-ca-certificates'
+
+

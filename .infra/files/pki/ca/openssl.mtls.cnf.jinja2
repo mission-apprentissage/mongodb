@@ -1,0 +1,20 @@
+[ req ]
+default_bits            = 2048
+encrypt_key             = yes
+default_md              = sha256
+utf8                    = yes
+string_mask             = utf8only
+prompt                  = yes
+distinguished_name      = req_mtls_dn
+req_extensions          = req_mtls_reqext
+prompt = no
+
+[ req_mtls_dn ]
+countryName             = "FR"
+organizationName        = "Mission Apprentissage"
+commonName              = "{{ dns_name }}"
+
+[ req_mtls_reqext ]
+keyUsage                = critical, digitalSignature
+extendedKeyUsage        = serverAuth,clientAuth
+subjectKeyIdentifier    = hash

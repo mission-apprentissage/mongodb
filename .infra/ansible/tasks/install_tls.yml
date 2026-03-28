@@ -1,9 +1,9 @@
 ---
-- name: "Create TLS file"
+- name: "Update MongoDB X.509 certificate"
   shell:
     cmd: '/opt/app/scripts/update_cert.sh'
 
-- name: "Create Update TLS CRON"
+- name: "Create CRON task to update MongoDB X.509 certificate"
   ansible.builtin.cron:
     name: "mongodb_tls"
     minute: "0"
