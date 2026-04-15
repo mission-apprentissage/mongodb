@@ -1,6 +1,6 @@
 [ req ]
-default_bits            = 2048
-encrypt_key             = yes
+default_bits            = 4096
+encrypt_key             = no
 default_md              = sha256
 utf8                    = yes
 string_mask             = utf8only
@@ -16,5 +16,5 @@ commonName              = "{{ dns_name }}"
 
 [ req_mtls_reqext ]
 keyUsage                = critical, digitalSignature
-extendedKeyUsage        = serverAuth,clientAuth
+extendedKeyUsage        = clientAuth
 subjectKeyIdentifier    = hash

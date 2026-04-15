@@ -2,10 +2,48 @@
 
 set -euo pipefail
 
-CERT_DIR="/opt/app/pki/certs/{{ dns_name }}"
-CERT_FILE="${CERT_DIR}/fullchain.pem"
+###########################################################################
+# Autorité de certification publique
+
+CERT_DIR="/opt/app/system/certbot/conf/live/{{ dns_name }}"
+CHAIN_FILE="${CERT_DIR}/chain.pem"
+FULLCHAIN_FILE="${CERT_DIR}/fullchain.pem"
+CERT_FILE="${CERT_DIR}/cert.pem"
 KEY_FILE="${CERT_DIR}/privkey.pem"
 
-cat "${CERT_FILE}" "${KEY_FILE}" > /mnt/data/mongodb.pem
+# Certificat serveur signé par la CA publique (présenté aux clients)
+# certificateKeyFile: /mnt/data/mongodb.pem
+
+cat "${KEY_FILE}" "${FULLCHAIN_FILE}" > /mnt/data/mongodb.pem
 chmod 600 /mnt/data/mongodb.pem
 chown mongodb:mongodb /mnt/data/mongodb.pem
+
+# CA publique : utilisée pour vérifier les certificats clients
+# CAFile: /mnt/data/mongodb-ca.pem
+
+cat "${CHAIN_FILE}" /etc/ssl/certs/ISRG_Root_X1.pem > /mnt/data/mongodb-ca.pem
+chmod 644 /mnt/data/mongodb-ca.pem
+chown mongodb:mongodb /mnt/data/mongodb-ca.pem
+
+###########################################################################
+# Autorité de certification privée
+
+CERT_DIR="/opt/app/pki/certs/{{ dns_name }}"
+CHAIN_FILE="${CERT_DIR}/chain.pem"
+FULLCHAIN_FILE="${CERT_DIR}/fullchain.pem"
+CERT_FILE="${CERT_DIR}/cert.pem"
+KEY_FILE="${CERT_DIR}/privkey.pem"
+
+# Certificat membre signé par la CA privée (présenté aux pairs du cluster)
+# clusterFile: /mnt/data/mongodb-cluster.pem
+
+cat "${KEY_FILE}" "${CERT_FILE}" /opt/app/pki/ca/ca.pem > /mnt/data/mongodb-cluster.pem
+chmod 600 /mnt/data/mongodb-cluster.pem
+chown mongodb:mongodb /mnt/data/mongodb-cluster.pem
+
+# CA privée : utilisée pour vérifier les certificats des pairs
+# clusterCAFile: /mnt/data/mongodb-cluster-ca.pem
+
+cat /opt/app/pki/ca/ca.pem /opt/app/pki/ca/root-ca.pem > /mnt/data/mongodb-cluster-ca.pem
+chmod 644 /mnt/data/mongodb-cluster-ca.pem
+chown mongodb:mongodb /mnt/data/mongodb-cluster-ca.pem

@@ -14,11 +14,11 @@
         file: "{{ inventory_dir }}/../env.{{ env_type }}.yml"
         expressions: ignore
 
-    - name: "Installation de mongodb"
-      include_tasks: ./tasks/install_mongodb.yml
-
     - name: "Montage du volume"
       include_tasks: ./tasks/mount_volume.yml
+
+    - name: "Installation de MongoDB"
+      include_tasks: ./tasks/install_mongodb.yml
 
     - name: "Copie des fichiers"
       include_tasks: ./tasks/files_copy.yml
@@ -26,35 +26,39 @@
     - name: "Lancement des services systeme"
       include_tasks: ./tasks/system.yml
 
-    - name: "Installation des certificats TLS"
-      include_tasks: ./tasks/install_tls.yml
-
     - name: "Installation d'une autorité de certification X.509 intermédiaire"
       include_tasks: ./tasks/install_ca.yml
 
-    - name: "Démarrage de mongodb"
+    - name: "Installation des certificats X.509 pour MongoDB"
+      include_tasks: ./tasks/install_tls.yml
+
+    - name: "Configuration de MongoDB"
+      include_tasks: ./tasks/start_initial_mongodb.yml
+      when: context == "new-cluster"
+
+    - name: "Configuration de MongoDB"
       include_tasks: ./tasks/start_mongodb.yml
+
+    - name: "Configuration du replicat set"
+      include_tasks: ./tasks/config_replicat_set.yml
+      when: context == "new-cluster"
 
     - name: "Ajout du membre au replicat set"
       ansible.builtin.shell:
         cmd: "/opt/app/scripts/register_member.sh"
       when: context == "new-member"
 
-    - name: "Configuration du replicat set"
-      include_tasks: ./tasks/config_replicat_set.yml
-      when: context == "new-cluster"
-
     - name: "Configuration des utilisateurs"
       include_tasks: ./tasks/create_users.yml
       when: context == "new-cluster" or context == "update"
     
-#    - name: "Configuration de la sauvegarde de la base de données"
-#      import_tasks: ./tasks/configure-mongodb-backup.yml
-#      when: backup_enable | default(false) | bool
+    - name: "Configuration de la sauvegarde de la base de données"
+      import_tasks: ./tasks/configure-mongodb-backup.yml
+      when: backup_enable | default(false) | bool
 
-#    - name: "Percona"
-#      include_tasks: ./tasks/percona.yml
-#
+    - name: "Percona"
+      include_tasks: ./tasks/percona.yml
+
     - name: Check if reboot required
       stat:
         path: /var/run/reboot-required

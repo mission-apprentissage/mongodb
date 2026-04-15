@@ -1,6 +1,10 @@
 ---
-- name: "Start service"
-  ansible.builtin.service:
-    name: mongod
-    state: started
-    enabled: yes
+
+- name: "Create configuration file"
+  ansible.builtin.template:
+    src:  "{{ inventory_dir }}/../files/mongod.conf.step-2.jinja2"
+    dest: "/etc/mongod.conf"
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart MongoDB

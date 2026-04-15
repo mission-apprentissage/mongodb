@@ -1,7 +1,7 @@
 ---
 - name: "Create role {{ role.name }}"
   shell:
-    cmd: '/opt/app/scripts/mongo_local.sh /opt/app/configs/mongodb/create_roles.js'
+    cmd: '/opt/app/scripts/mongo_local.sh < /opt/app/configs/mongodb/create_roles.js'
   environment:
     NAME: "{{ role.name }}"
     DATABASE: "{{ role.database }}"
@@ -11,7 +11,7 @@
 
 - name: "Create role {{ role.name }}"
   shell:
-    cmd: '/opt/app/scripts/mongo.sh /opt/app/configs/mongodb/create_roles.js'
+    cmd: '/opt/app/scripts/mongo.sh < /opt/app/configs/mongodb/create_roles.js'
   environment:
     NAME: "{{ role.name }}"
     DATABASE: "{{ role.database }}"

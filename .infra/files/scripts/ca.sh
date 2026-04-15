@@ -108,9 +108,13 @@ renew() {
 
     log "Un certificat existe"
 
-    openssl verify -crl_check -CAfile $PKI/crl/chain.pem $PKI/certs/${FQDN}/cert.pem &>/dev/null
+    #openssl verify -crl_check -CAfile $PKI/crl/chain.pem -CRLfile $PKI/crl/ca.crl $PKI/certs/${FQDN}/cert.pem &>/dev/null
 
-    if [ $? -eq 0 ]; then
+    serial=$(openssl x509 -noout -serial -in $PKI/certs/${FQDN}/cert.pem | sed 's/serial=//')
+
+    openssl crl -in $PKI/crl/ca.crl -noout -text | grep -qi $serial
+
+    if [ $? -eq 1 ]; then
 
       log "Le certificat n'est pas révoqué"
 
@@ -147,15 +151,27 @@ renew() {
 
   log "Génération d'une clé privée pour le certificat X.509"
 
-  openssl genpkey -algorithm ed25519 -out $ARCHIVE/$id.privkey.pem
+  openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out $ARCHIVE/$id.privkey.pem
+
+  if [ $? -ne 0 ]; then
+    eexit 1
+  fi
 
   log "Génération de la demande de certificat X.509"
 
   openssl req -new -config $CA/openssl.mtls.cnf -key $ARCHIVE/$id.privkey.pem -outform PEM -out $ARCHIVE/$id.csr.pem
 
+  if [ $? -ne 0 ]; then
+    eexit 1
+  fi
+
   log "Signature du certificat X.509 par l'autorité de certification intermédiaire"
 
   openssl ca -batch -config $CA/openssl.cnf -in $ARCHIVE/$id.csr.pem -extensions mtls_ext -out $ARCHIVE/$id.cert.crt
+
+  if [ $? -ne 0 ]; then
+    eexit 1
+  fi
 
   openssl x509 -in $ARCHIVE/$id.cert.crt -outform PEM -out $ARCHIVE/$id.cert.pem
 
@@ -180,7 +196,7 @@ renew() {
     
     openssl ca -config $CA/openssl.cnf -gencrl -out $PKI/crl/archive/1.ca.crl
 
-    cat $CA/ca.pem $CA/root-ca.pem $PKI/crl/archive/1.ca.crl > $PKI/crl/archive/1.chain.pem
+    cat $CA/ca.pem $CA/root-ca.pem > $PKI/crl/archive/1.chain.pem
   
     ln -sf $PKI/crl/archive/1.ca.crl $PKI/crl/ca.crl 
     ln -sf $PKI/crl/archive/1.chain.pem $PKI/crl/chain.pem
@@ -210,15 +226,23 @@ revoke() {
 
   fi
 
-  openssl verify -crl_check -CAfile $PKI/crl/chain.pem $CERT &>/dev/null
+  #openssl verify -crl_check -CAfile $PKI/crl/chain.pem -CRLfile $PKI/crl/ca.crl $CERT &>/dev/null
 
-  if [ $? -ne 0 ]; then
+  serial=$(openssl x509 -noout -serial -in $CERT | sed 's/serial=//')
+
+  openssl crl -in $PKI/crl/ca.crl -noout -text | grep -qi $serial
+
+  if [ $? -ne 1 ]; then
 
     eexit 0 "Le certificat est déjà révoqué"
 
   fi
 
   openssl ca -config $CA/openssl.cnf -revoke $CERT -crl_reason $REASON
+
+  if [ $? -ne 0 ]; then
+    eexit 1
+  fi
 
   log "Mise à jour de la base CRL de certificats révoqués"
 
@@ -229,7 +253,7 @@ revoke() {
 
   openssl ca -config $CA/openssl.cnf -gencrl -out $ARCHIVE/$id.ca.crl
 
-  cat $CA/ca.pem $CA/root-ca.pem $ARCHIVE/$id.ca.crl > $ARCHIVE/$id.chain.pem
+  cat $CA/ca.pem $CA/root-ca.pem > $ARCHIVE/$id.chain.pem
   
   ln -sf $ARCHIVE/$id.ca.crl $PKI/crl/ca.crl 
   ln -sf $ARCHIVE/$id.chain.pem $PKI/crl/chain.pem

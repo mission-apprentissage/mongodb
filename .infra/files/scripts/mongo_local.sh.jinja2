@@ -4,4 +4,4 @@ set -euo pipefail
 
 # Connect to the local mongodb instance directly
 
-mongosh "mongodb://__system:{{KEYFILE}}@{{dns_name}}:27017/?authSource=local&directConnection=true&tls=true" "$@"
+mongosh "mongodb://{{ dns_name }}:27017" --tls --tlsCAFile /mnt/data/mongodb-ca.pem -u root -password {{ root }} --authenticationDatabase admin
