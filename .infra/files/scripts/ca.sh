@@ -46,7 +46,7 @@ abort() {
 
 readonly PKI=/opt/app/pki
 readonly CA=/opt/app/pki/ca
-readonly EXPR_RG=1
+readonly EXPR_RG=15
 
 getCertificateLastId() {
 

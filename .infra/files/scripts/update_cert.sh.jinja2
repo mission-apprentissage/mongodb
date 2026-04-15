@@ -44,6 +44,6 @@ chown mongodb:mongodb /mnt/data/mongodb-cluster.pem
 # CA privée : utilisée pour vérifier les certificats des pairs
 # clusterCAFile: /mnt/data/mongodb-cluster-ca.pem
 
-cat /opt/app/pki/ca/ca.pem /opt/app/pki/ca/root-ca.pem > /mnt/data/mongodb-cluster-ca.pem
+cat /opt/app/pki/mongodb-sandbox-*-ca.pem /opt/app/pki/ca/root-ca.pem > /mnt/data/mongodb-cluster-ca.pem
 chmod 644 /mnt/data/mongodb-cluster-ca.pem
 chown mongodb:mongodb /mnt/data/mongodb-cluster-ca.pem
