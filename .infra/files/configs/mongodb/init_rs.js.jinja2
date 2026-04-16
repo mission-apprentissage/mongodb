@@ -10,7 +10,7 @@ try {
         }
         cfg = rs.conf();
         cfg.members[0].priority = 5;
-        rs.reconfig(cfg, {force:true});
+        rs.reconfig(cfg);
     } else {
         throw e;
     }

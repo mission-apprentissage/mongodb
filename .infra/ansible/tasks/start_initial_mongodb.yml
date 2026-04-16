@@ -35,15 +35,6 @@
   shell:
     cmd: 'mongosh "mongodb://127.0.0.1/?directConnection=true" --tls --tlsAllowInvalidHostnames --tlsCAFile /mnt/data/mongodb-ca.pem < /opt/app/configs/mongodb/create_root_user.js'
   when: not stage1_marker.stat.exists
-  register: stage1_wait
-
-# Afficher seulement la sortie standard
-- debug:
-    msg: "{{ stage1_wait.stdout }}"
-
-# Afficher seulement les erreurs
-- debug:
-    msg: "{{ stage1_wait.stderr }}"
 
 - name: "ÉTAPE 1 : Créer le dossier de marquage"
   file:
