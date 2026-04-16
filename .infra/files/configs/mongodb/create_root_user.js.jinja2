@@ -2,11 +2,12 @@ db = db.getSiblingDB("admin");
 
 db.createUser({
   user: "root",
-  pwd: "{{ root }}",
+  pwd: {{ root | tojson }},
   roles: [
     {
       "role": "root",
       "db": "admin"
     }
-  ],
+  ]
 });
+

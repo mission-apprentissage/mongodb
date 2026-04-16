@@ -41,7 +41,7 @@
 
 - name: "Create configuration file"
   ansible.builtin.template:
-    src:  "{{ inventory_dir }}/../files/mongod.conf.step-2.jinja2"
+    src:  "{{ inventory_dir }}/../files/configs/mongodb/mongod.conf.step-2.jinja2"
     dest: "/etc/mongod.conf"
     mode: "0600"
     owner: mongodb

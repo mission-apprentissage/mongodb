@@ -15,7 +15,7 @@ req_extensions          = req_intermediate_ca_ext
 [ req_intermediate_ca_dn ]
 countryName             = "FR"
 organizationName        = "Mission Apprentissage"
-commonName              = "MongoDB Intermediate CA'
+commonName              = "MongoDB Intermediate CA"
 
 [ req_intermediate_ca_ext ]
 keyUsage                = critical,keyCertSign,cRLSign
@@ -40,7 +40,7 @@ email_in_dn             = no
 preserve                = no
 name_opt                = ca_default
 cert_opt                = ca_default
-copy_extensions         = copy
+copy_extensions         = none
 x509_extensions         = intermediate_ca_ext
 
 crl_extensions          = crl_ext

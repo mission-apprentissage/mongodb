@@ -11,7 +11,7 @@
 
 - name: "Create initial configuration file"
   ansible.builtin.template:
-    src:  "{{ inventory_dir }}/../files/mongod.conf.step-1.jinja2"
+    src:  "{{ inventory_dir }}/../files/configs/mongodb/mongod.conf.step-1.jinja2"
     dest: "/etc/mongod.conf"
     mode: "0600"
     owner: mongodb
@@ -30,11 +30,11 @@
     delay: 2
     timeout: 30
   when: not stage1_marker.stat.exists
-  register: stage1_wait
 
 - name: "Création de l'utilisation 'root'"
   shell:
     cmd: 'mongosh "mongodb://127.0.0.1/?directConnection=true" --tls --tlsAllowInvalidHostnames --tlsCAFile /mnt/data/mongodb-ca.pem < /opt/app/configs/mongodb/create_root_user.js'
+  when: not stage1_marker.stat.exists
   register: stage1_wait
 
 # Afficher seulement la sortie standard
@@ -83,7 +83,7 @@
 
 - name: "Create configuration file"
   ansible.builtin.template:
-    src:  "{{ inventory_dir }}/../files/mongod.conf.step-2.jinja2"
+    src:  "{{ inventory_dir }}/../files/configs/mongodb/mongod.conf.step-2.jinja2"
     dest: "/etc/mongod.conf"
     mode: "0600"
     owner: mongodb

@@ -38,12 +38,13 @@
 
     - name: "Configuration de MongoDB"
       include_tasks: ./tasks/start_mongodb.yml
+      when: context != "new-cluster"
 
-    - name: "Configuration du replicat set"
+    - name: "Configuration de la réplication"
       include_tasks: ./tasks/config_replicat_set.yml
       when: context == "new-cluster"
 
-    - name: "Ajout du membre au replicat set"
+    - name: "Ajout du membre à la grappe"
       ansible.builtin.shell:
         cmd: "/opt/app/scripts/register_member.sh"
       when: context == "new-member"

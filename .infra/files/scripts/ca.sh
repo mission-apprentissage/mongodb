@@ -35,7 +35,7 @@ eexit() {
 
 cleanup() {
   if ! rm -fr $P_LOCK; then
-    eexit "Failed to release lock directory '$P_LOCK'"
+    eexit 1 "Failed to release lock directory '$P_LOCK'"
   fi
 }
 
@@ -50,8 +50,8 @@ readonly EXPR_RG=15
 
 getCertificateLastId() {
 
-  local readonly FQDN=$1
-  local readonly ARCHIVE=$PKI/certs/${FQDN}/archive
+  local -r FQDN=$1
+  local -r ARCHIVE=$PKI/certs/${FQDN}/archive
 
   if [ ! -d "$ARCHIVE" ]; then
     eexit 1 "Le dossier $ARCHIVE n'existe pas"
@@ -69,7 +69,7 @@ getCertificateLastId() {
 
 getCrlLastId() {
 
-  local readonly ARCHIVE=$PKI/crl/archive
+  local -r ARCHIVE=$PKI/crl/archive
 
   if [ ! -d "$ARCHIVE" ]; then
     eexit 1 "Le dossier $ARCHIVE n'existe pas"
@@ -92,8 +92,8 @@ renew() {
     exit 1
   fi
 
-  local readonly FQDN=$1
-  local readonly ARCHIVE=$PKI/certs/${FQDN}/archive
+  local -r FQDN=$1
+  local -r ARCHIVE=$PKI/certs/${FQDN}/archive
   local REVOKED=0
 
   umask 077
@@ -154,7 +154,7 @@ renew() {
   openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out $ARCHIVE/$id.privkey.pem
 
   if [ $? -ne 0 ]; then
-    eexit 1
+    eexit 1 "Erreur durant la génération de la clé privée"
   fi
 
   log "Génération de la demande de certificat X.509"
@@ -162,7 +162,7 @@ renew() {
   openssl req -new -config $CA/openssl.mtls.cnf -key $ARCHIVE/$id.privkey.pem -outform PEM -out $ARCHIVE/$id.csr.pem
 
   if [ $? -ne 0 ]; then
-    eexit 1
+    eexit 1 "Erreur durant la génération de la demande de certificat X.509"
   fi
 
   log "Signature du certificat X.509 par l'autorité de certification intermédiaire"
@@ -170,7 +170,7 @@ renew() {
   openssl ca -batch -config $CA/openssl.cnf -in $ARCHIVE/$id.csr.pem -extensions mtls_ext -out $ARCHIVE/$id.cert.crt
 
   if [ $? -ne 0 ]; then
-    eexit 1
+    eexit 1 "Erreur durant la signature du certificat X.509"
   fi
 
   openssl x509 -in $ARCHIVE/$id.cert.crt -outform PEM -out $ARCHIVE/$id.cert.pem
@@ -216,9 +216,9 @@ revoke() {
     exit 1
   fi
 
-  local readonly CERT=$1
-  local readonly REASON=$2
-  local readonly ARCHIVE=$PKI/crl/archive
+  local -r CERT=$1
+  local -r REASON=$2
+  local -r ARCHIVE=$PKI/crl/archive
 
   if [ ! -f $CERT ]; then
 
@@ -241,7 +241,7 @@ revoke() {
   openssl ca -config $CA/openssl.cnf -revoke $CERT -crl_reason $REASON
 
   if [ $? -ne 0 ]; then
-    eexit 1
+    eexit 1 "Erreur durant la révocation du certificat"
   fi
 
   log "Mise à jour de la base CRL de certificats révoqués"
@@ -279,7 +279,7 @@ main() {
   case "$1" in
     "renew") shift; renew "$@";;
     "revoke") shift; revoke "$@";;
-    "*") usage >&2; exit 1;;
+    *) usage >&2; exit 1;;
   esac
 
 }

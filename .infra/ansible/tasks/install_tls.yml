@@ -5,7 +5,7 @@
 
 - name: "Create CRON task to update MongoDB X.509 certificate"
   ansible.builtin.cron:
-    name: "mongodb_tls"
+    name: "mongodb-x509-certificate-rotate"
     minute: "0"
     hour: "4"
     job: "bash /opt/app/scripts/rotate_cert.sh >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'MongoDB Rotate Cert' -v $?"

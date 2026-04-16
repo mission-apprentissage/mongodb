@@ -19,7 +19,7 @@ net:
     allowConnectionsWithoutCertificates: true
 
     clusterAuthX509:
-      extensionValue: "rs-sandbox"
+      extensionValue: rs-{{ env_type }}
 
 systemLog:
   path: /var/log/mongodb/mongod.log
@@ -40,6 +40,3 @@ storage:
   dbPath: /mnt/data/db
   directoryPerDB: true
   oplogMinRetentionHours: 168
-
-replication:
-  replSetName: rs-sandbox
