@@ -22,7 +22,6 @@
     delay: 2
     timeout: 30
   when: not stage1_marker.stat.exists
-  register: stage1_wait
 
 - name: "ÉTAPE 1 : Créer le dossier de marquage"
   file:
