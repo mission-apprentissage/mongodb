@@ -22,7 +22,6 @@ Veuillez suivre la procédure sur [Création d'une instance et d'un volume exter
 Ajouter les secrets liés à l'environnement dans le fichier **SOPS** via `.bin/mna vault:edit <env>`:
 
 ```yml
-KEYFILE: <string>
 root: <string>
 backup: <string>
 pmm: <string>
@@ -35,7 +34,6 @@ users:
 
 Avec:
 
-- `KEYFILE`: créer un secret via `pwgen -s 1024 1`
 - `root`: Mot de passe de l'utilisateur `root` de la base de données `pwgen -s 64 1`
 - `backup`: Mot de passe de l'utilisateur `backup` de la base de données `pwgen -s 64 1` utilisé pour les opérations de backup et restauration.
 - `pmm`: Mot de passe de l'utilisateur `pmm` de la base de données `pwgen -s 64 1` utilisé pour le monitoring percona.

@@ -1,0 +1,105 @@
+---
+
+- set_fact:
+    stage1_marker_file: "/var/lib/ansible/.mongodb_stage1_completed"
+
+- name: "Vérifier si l'étape 1 a déjà été exécutée"
+  stat:
+    path: "{{ stage1_marker_file }}"
+  register: stage1_marker
+  tags: always
+
+- name: "Create initial configuration file"
+  ansible.builtin.template:
+    src:  "{{ inventory_dir }}/../files/configs/mongodb/mongod.conf.step-1.jinja2"
+    dest: "/etc/mongod.conf"
+    mode: "0600"
+    owner: mongodb
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Démarrer le service MongoDB"
+  systemd:
+    name: mongod
+    state: restarted
+    enabled: yes
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Attendre que MongoDB soit prêt"
+  wait_for:
+    port: 27017
+    delay: 2
+    timeout: 30
+  when: not stage1_marker.stat.exists
+
+- name: "Création de l'utilisation 'root'"
+  shell:
+    cmd: 'mongosh "mongodb://127.0.0.1/?directConnection=true" --tls --tlsAllowInvalidHostnames --tlsCAFile /mnt/data/mongodb-ca.pem < /opt/app/configs/mongodb/create_root_user.js'
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Créer le dossier de marquage"
+  file:
+    path: "/var/lib/ansible"
+    state: directory
+    mode: '0755'
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Marquer l'étape 1 comme complétée"
+  file:
+    path: "{{ stage1_marker_file }}"
+    state: touch
+    modification_time: now
+  when: not stage1_marker.stat.exists
+  register: stage1_completed
+
+- name: "Afficher le statut de l'étape 1"
+  debug:
+    msg: "ÉTAPE 1 : {{ 'SKIPPÉE (déjà exécutée)' if stage1_marker.stat.exists else 'EXÉCUTÉE AVEC SUCCÈS' }}"
+
+- name: "Vérifier que l'étape 1 a réussi"
+  assert:
+    that:
+      - stage1_marker.stat.exists or stage1_completed is changed
+    fail_msg: "L'étape 1 n'a pas été exécutée avec succès. L'étape 2 ne peut pas s'effectuer."
+    success_msg: "L'étape 1 a réussi. L'étape 2 peut procéder."
+
+- set_fact:
+    stage2_marker_file: "/var/lib/ansible/.mongodb_stage2_completed"
+
+- name: "Vérifier si l'étape 2 a déjà été exécutée"
+  stat:
+    path: "{{ stage2_marker_file }}"
+  when: stage1_marker.stat.exists or stage1_completed is changed
+  register: stage2_marker
+  tags: always
+
+- name: "Create configuration file"
+  ansible.builtin.template:
+    src:  "{{ inventory_dir }}/../files/configs/mongodb/mongod.conf.step-2.jinja2"
+    dest: "/etc/mongod.conf"
+    mode: "0600"
+    owner: mongodb
+  when: not stage2_marker.stat.exists
+  notify:
+    - Restart MongoDB
+
+- name: "Restart service"
+  ansible.builtin.service:
+    name: mongod
+    state: restarted
+  when: not stage2_marker.stat.exists
+
+- name: "Attendre que MongoDB soit prêt"
+  wait_for:
+    port: 27017
+    delay: 2
+    timeout: 30
+  when: not stage2_marker.stat.exists
+
+- name: "ÉTAPE 2 : Marquer l'étape 2 comme complétée"
+  file:
+    path: "{{ stage2_marker_file }}"
+    state: touch
+    modification_time: now
+  when: not stage2_marker.stat.exists
+  register: stage2_completed
+

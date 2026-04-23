@@ -1,6 +1,48 @@
 ---
-- name: "Start service"
-  ansible.builtin.service:
+
+- set_fact:
+    stage1_marker_file: "/var/lib/ansible/.mongodb_stage1_completed"
+
+- name: "Vérifier si l'étape 1 a déjà été exécutée"
+  stat:
+    path: "{{ stage1_marker_file }}"
+  register: stage1_marker
+  tags: always
+
+- name: "ÉTAPE 1 : Démarrer le service MongoDB"
+  systemd:
     name: mongod
-    state: started
+    state: restarted
     enabled: yes
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Attendre que MongoDB soit prêt"
+  wait_for:
+    port: 27017
+    delay: 2
+    timeout: 30
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Créer le dossier de marquage"
+  file:
+    path: "/var/lib/ansible"
+    state: directory
+    mode: '0755'
+  when: not stage1_marker.stat.exists
+
+- name: "ÉTAPE 1 : Marquer l'étape 1 comme complétée"
+  file:
+    path: "{{ stage1_marker_file }}"
+    state: touch
+    modification_time: now
+  when: not stage1_marker.stat.exists
+  register: stage1_completed
+
+- name: "Create configuration file"
+  ansible.builtin.template:
+    src:  "{{ inventory_dir }}/../files/configs/mongodb/mongod.conf.step-2.jinja2"
+    dest: "/etc/mongod.conf"
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart MongoDB

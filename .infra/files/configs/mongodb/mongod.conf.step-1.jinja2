@@ -1,0 +1,42 @@
+net:
+  bindIpAll: true
+  tls:
+    mode: requireTLS
+
+    # Certificat serveur signé par la CA publique (présenté aux clients)
+    certificateKeyFile: /mnt/data/mongodb.pem
+
+    # CA publique : utilisée pour vérifier les certificats clients
+    CAFile: /mnt/data/mongodb-ca.pem
+
+    # CA privée : utilisée pour vérifier les certificats des pairs
+    clusterCAFile: /mnt/data/mongodb-cluster-ca.pem
+
+    # Certificat membre signé par la CA privée (présenté aux pairs du cluster)
+    clusterFile: /mnt/data/mongodb-cluster.pem
+
+    disabledProtocols: TLS1_0,TLS1_1
+    allowConnectionsWithoutCertificates: true
+
+    clusterAuthX509:
+      extensionValue: rs-{{ env_type }}
+
+systemLog:
+  path: /var/log/mongodb/mongod.log
+  logAppend: true
+  logRotate: reopen
+  destination: file
+
+operationProfiling:
+  mode: slowOp
+  slowOpThresholdMs: 500
+
+security:
+  clusterAuthMode: x509
+  authorization: enabled
+  javascriptEnabled: false
+
+storage:
+  dbPath: /mnt/data/db
+  directoryPerDB: true
+  oplogMinRetentionHours: 168
