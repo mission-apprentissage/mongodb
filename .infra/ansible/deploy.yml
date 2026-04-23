@@ -14,12 +14,12 @@
         file: "{{ inventory_dir }}/../env.{{ env_type }}.yml"
         expressions: ignore
 
-#    - name: "Montage du volume"
-#      include_tasks: ./tasks/mount_volume.yml
-#
-#    - name: "Installation de MongoDB"
-#      include_tasks: ./tasks/install_mongodb.yml
-#
+    - name: "Montage du volume"
+      include_tasks: ./tasks/mount_volume.yml
+
+    - name: "Installation de MongoDB"
+      include_tasks: ./tasks/install_mongodb.yml
+
     - name: "Copie des fichiers"
       include_tasks: ./tasks/files_copy.yml
 
@@ -32,43 +32,43 @@
     - name: "Installation des certificats X.509 pour MongoDB"
       include_tasks: ./tasks/install_tls.yml
 
-#    - name: "Configuration de MongoDB"
-#      include_tasks: ./tasks/start_initial_mongodb.yml
-#      when: context == "new-cluster"
-#
-#    - name: "Configuration de MongoDB"
-#      include_tasks: ./tasks/start_mongodb.yml
-#      when: context != "new-cluster"
-#
-#    - name: "Configuration de la réplication"
-#      include_tasks: ./tasks/config_replicat_set.yml
-#      when: context == "new-cluster"
-#
-#    - name: "Ajout du membre à la grappe"
-#      ansible.builtin.shell:
-#        cmd: "/opt/app/scripts/register_member.sh"
-#      when: context == "new-member"
-#
-#    - name: "Configuration des utilisateurs"
-#      include_tasks: ./tasks/create_users.yml
-#      when: context == "new-cluster" or context == "update"
-#    
-#    - name: "Configuration de la sauvegarde de la base de données"
-#      import_tasks: ./tasks/configure-mongodb-backup.yml
-#      when: backup_enable | default(false) | bool
-#
-#    - name: "Percona"
-#      include_tasks: ./tasks/percona.yml
-#
-#    - name: Check if reboot required
-#      stat:
-#        path: /var/run/reboot-required
-#      register: reboot_required_file
-#
-#    - name: Reboot if required
-#      reboot:
-#      when: reboot_required_file.stat.exists == true
-#
+    - name: "Configuration de MongoDB"
+      include_tasks: ./tasks/start_initial_mongodb.yml
+      when: context == "new-cluster"
+
+    - name: "Configuration de MongoDB"
+      include_tasks: ./tasks/start_mongodb.yml
+      when: context != "new-cluster"
+
+    - name: "Configuration de la réplication"
+      include_tasks: ./tasks/config_replicat_set.yml
+      when: context == "new-cluster"
+
+    - name: "Ajout du membre à la grappe"
+      ansible.builtin.shell:
+        cmd: "/opt/app/scripts/register_member.sh"
+      when: context == "new-member"
+
+    - name: "Configuration des utilisateurs"
+      include_tasks: ./tasks/create_users.yml
+      when: context == "new-cluster" or context == "update"
+    
+    - name: "Configuration de la sauvegarde de la base de données"
+      import_tasks: ./tasks/configure-mongodb-backup.yml
+      when: backup_enable | default(false) | bool
+
+    - name: "Percona"
+      include_tasks: ./tasks/percona.yml
+
+    - name: Check if reboot required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
+
+    - name: Reboot if required
+      reboot:
+      when: reboot_required_file.stat.exists == true
+
   handlers:
     - name: Reload Daemon
       ansible.builtin.systemd_service:
