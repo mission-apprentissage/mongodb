@@ -21,7 +21,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-${ROOT_DIR}/.bin/mna-mongodb backup:download "$FILENAME"
+${ROOT_DIR}/.bin/mna backup:download "$FILENAME"
 
 cat "${ROOT_DIR}/tmp/${FILENAME}.secret" \
   | docker run --rm -i \

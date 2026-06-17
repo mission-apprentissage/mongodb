@@ -2,74 +2,97 @@
 
 set -euo pipefail
 
-if [ ! -f "${ROOT_DIR}/.bin/shared/commands.sh" ]; then
+SUBMODULE_PATH="${ROOT_DIR}/.bin/shared"
 
-  echo "Mise à jour du sous-module mna-shared-bin"
+if [[ ! -f "$SUBMODULE_PATH/.git" ]] && [[ ! -d "$SUBMODULE_PATH/.git" ]]; then
 
-  git submodule update --init "${ROOT_DIR}/.bin/shared"
+  echo "Initialisation du sous-module : $SUBMODULE_PATH"
+  git submodule update --init -- "$SUBMODULE_PATH"
+
+else
+
+  expected=$(git ls-files --stage -- "$SUBMODULE_PATH" | awk '{print $2}')
+  current=$(git -C "$SUBMODULE_PATH" rev-parse HEAD)
+
+  if [[ "$expected" != "$current" ]]; then
+
+    echo "Mise à jour du sous-module :"
+    echo "$current → $expected"
+    git submodule update -- "$SUBMODULE_PATH"
+
+  fi
 
 fi
 
 . "${ROOT_DIR}/.bin/shared/commands.sh"
 
-unset _meta_help["app:deploy"]
-unset app:deploy
-unset _meta_help["seed:update"]
-unset seed:update
-unset _meta_help["seed:apply"]
-unset seed:apply
-unset _meta_help["docker:login"]
-unset docker:login
-
 ################################################################################
-# Non-shared commands
+# Shared commands
 ################################################################################
 
-_meta_help["app:deploy:cluster:init"]="Init a new cluster"
+_register "app:deploy:log:encrypt"
+_register "app:deploy:log:decrypt"
+_register "dev:dependencies:check"
+_register "dev:setup"
+_register "vault:edit"
 
-function app:deploy:cluster:init() {
-  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=new-cluster"
+################################################################################
+# Local commands
+################################################################################
+
+_local_app_deploy_cluster_init__help="Init a new cluster"
+_register "app:deploy:cluster:init" "_local_app_deploy_cluster_init"
+
+function _local_app_deploy_cluster_init() {
+  "${SCRIPTS_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=new-cluster"
 }
 
-_meta_help["app:deploy:cluster:node:update"]="Update cluster"
+_local_app_deploy_cluster_node_update__help="Update cluster"
+_register "app:deploy:cluster:node:update" "_local_app_deploy_cluster_node_update"
 
-function app:deploy:cluster:node:update() {
-  "${SCRIPT_DIR}/app-deploy-cluster-node-update.sh" "$@"
+function _local_app_deploy_cluster_node_update() {
+  "${scripts_dir}/app-deploy-cluster-node-update.sh" "$@"
 }
 
-_meta_help["app:deploy:cluster:node:add"]="Add node to existing cluster"
+_local_app_deploy_cluster_node_add__help="Add node to existing cluster"
+_register "app:deploy:cluster:node:add" "_local_app_deploy_cluster_node_add"
 
-function app:deploy:cluster:node:add() {
-  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=new-member"
+function _local_app_deploy_cluster_node_add() {
+  "${SCRIPTS_SHARED_DIR}/app-deploy.sh" "$@" --extra-vars "context=new-member"
 }
 
-_meta_help["app:deploy:cluster:node:remove"]="Delete node from cluster"
+_local_app_deploy_cluster_node_remove__help="Remove node from existing cluster"
+_register "app:deploy:cluster:node:remove" "_local_app_deploy_cluster_node_remove"
 
-function app:deploy:cluster:node:remove() {
-  "${SCRIPT_DIR}/app-deploy-cluster-node-remove.sh" "$@"
+function _local_app_deploy_cluster_node_remove() {
+  "${SCRIPTS_DIR}/app-deploy-cluster-node-remove.sh" "$@"
 }
 
-_meta_help["backup:bucket:list"]="List S3 buckets"
+_local_backup_bucket_list__help="List S3 buckets"
+_register "backup:bucket:list" "_local_backup_bucket_list"
 
-function backup:bucket:list() {
-  "${SCRIPT_DIR}/s3.sh" ls --human-readable
+function _local_backup_bucket_list() {
+  "${SCRIPTS_DIR}/s3.sh" ls --human-readable
 }
 
-_meta_help["backup:list"]="List S3 files in bucket"
+_local_backup_list__help="List S3 files in bucket"
+_register "backup:list" "_local_backup_list"
 
-function backup:list() {
-  "${SCRIPT_DIR}/backup-list.sh" "$@"
+function _local_backup_list() {
+  "${SCRIPTS_DIR}/backup-list.sh" "$@"
 }
 
-_meta_help["backup:download"]="Download S3 file and decrypt it"
+_local_backup_download__help="Download S3 file and decrypt it"
+_register "backup:download" "_local_backup_download"
 
-function backup:download() {
-  "${SCRIPT_DIR}/backup-download.sh" "$@"
+function _local_backup_download() {
+  "${SCRIPTS_DIR}/backup-download.sh" "$@"
 }
 
-_meta_help["backup:restore"]="Restore S3 file to MongoDB"
+_local_backup_restore__help="Restore S3 file to MongoDB"
+_register "backup:restore" "_local_backup_restore"
 
-function backup:restore() {
-  "${SCRIPT_DIR}/backup-restore.sh" "$@"
+function _local_backup_restore() {
+  "${SCRIPTS_DIR}/backup-restore.sh" "$@"
 }
 
