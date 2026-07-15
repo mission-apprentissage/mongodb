@@ -57,8 +57,8 @@ Après chaque nœud mis à jour, vérifier avant de passer au suivant :
 /opt/app/scripts/mongo.sh --eval 'rs.status()'
 ```
 
-Tous les membres doivent être `HEALTHY` et `db.version()` doit refléter la nouvelle version sur le
-nœud qui vient d'être mis à jour.
+Tous les membres doivent afficher `stateStr: "PRIMARY"` ou `"SECONDARY"` avec `health: 1`, et
+`db.version()` doit refléter la nouvelle version sur le nœud qui vient d'être mis à jour.
 
 ## Burn-in
 
@@ -83,7 +83,7 @@ Une fois le burn-in validé, exécuter **une seule fois** (sur n'importe quel me
 ## Vérifications post-upgrade
 
 - `db.version()` ≥ version cible sur chaque nœud du cluster concerné.
-- `rs.status()` : tous les membres `HEALTHY`, pas de bascule de primaire imprévue.
+- `rs.status()` : tous les membres `PRIMARY`/`SECONDARY` avec `health: 1`, pas de bascule de primaire imprévue.
 - `db.adminCommand({getParameter: 1, featureCompatibilityVersion: 1})` reflète la version cible.
 - Le backup quotidien (`configure-mongodb-backup.yml`, nœud avec `backup_enable=true`) continue de
   s'exécuter sans erreur (vérifier les logs CRON du script `backup-database.sh.jinja2`).
