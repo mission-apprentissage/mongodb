@@ -1,0 +1,77 @@
+---
+- name: "Vérifier que mongot_download_url est défini"
+  ansible.builtin.assert:
+    that:
+      - mongot_download_url is defined
+      - mongot_download_url | length > 0
+    fail_msg: >-
+      mongot_download_url n'est pas défini pour ce nœud. Récupérer le lien via
+      https://www.mongodb.com/try/download/search-in-community (version {{ mongot_version }},
+      plateforme linux x86_64, package tgz) et le déclarer dans .infra/inventories/env.ini
+      pour ce groupe.
+
+- name: "Create mongot system directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+    owner: mongodb
+    group: mongodb
+    recurse: yes
+  loop:
+    - /opt/mongot
+    - /mnt/data/mongot
+    - /var/log/mongot
+    - /etc/mongot/secrets
+
+- name: "mongot user password file"
+  ansible.builtin.copy:
+    content: "{{ mongot }}"
+    dest: /etc/mongot/secrets/passwordFile
+    mode: "0600"
+    owner: mongodb
+    group: mongodb
+  notify:
+    - Restart mongot
+
+- name: "Download mongot archive"
+  ansible.builtin.get_url:
+    url: "{{ mongot_download_url }}"
+    dest: "/tmp/mongot-{{ mongot_version }}.tgz"
+    mode: "0644"
+
+- name: "Extract mongot archive"
+  ansible.builtin.unarchive:
+    src: "/tmp/mongot-{{ mongot_version }}.tgz"
+    dest: /opt/mongot
+    remote_src: yes
+    extra_opts:
+      - --strip-components=1
+    owner: mongodb
+    group: mongodb
+
+- name: "mongot configuration file"
+  ansible.builtin.template:
+    src: "{{ inventory_dir }}/../files/configs/mongot/mongot.conf.yml.jinja2"
+    dest: /etc/mongot.conf.yml
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart mongot
+
+- name: "mongot service configuration"
+  ansible.builtin.copy:
+    src: "{{ inventory_dir }}/../files/configs/mongot/mongot.service"
+    dest: /etc/systemd/system/mongot.service
+    mode: "0644"
+    owner: root
+  notify:
+    - Reload Daemon
+    - Restart mongot
+
+- name: "Enable and start mongot"
+  ansible.builtin.systemd_service:
+    name: mongot
+    enabled: yes
+    state: started
+    daemon_reload: yes

@@ -61,6 +61,10 @@ Pour migrer un cluster MongoDB existant vers la nouvelle architecture veuillez s
 
 Pour monter en version majeure un cluster existant sans changer d'architecture, veuillez suivre la procédure [Upgrade](./docs/deploy/upgrade.md).
 
+### MongoDB Search (mongot)
+
+Pour installer mongot (recherche textuelle/vectorielle) sur un cluster existant, veuillez suivre la procédure [mongot](./docs/deploy/mongot.md).
+
 ### Backup et restauration
 
 Consulter les documentations dédiées à la [sauvegarde](./docs/backup/backup.md) et à la [restauration](./docs/backup/restore.md) des données.
