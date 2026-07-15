@@ -17,7 +17,6 @@
     mode: "0700"
     owner: mongodb
     group: mongodb
-    recurse: yes
   loop:
     - /opt/mongot
     - /mnt/data/mongot
@@ -39,6 +38,7 @@
     url: "{{ mongot_download_url }}"
     dest: "/tmp/mongot-{{ mongot_version }}.tgz"
     mode: "0644"
+    checksum: "{{ ('sha256:' + mongot_checksum) if mongot_checksum is defined else omit }}"
 
 - name: "Extract mongot archive"
   ansible.builtin.unarchive:
