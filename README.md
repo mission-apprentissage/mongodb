@@ -57,6 +57,10 @@ Pour déployer un cluster MongoDB, il est nécessaire de déployer chaque noeud 
 
 Pour migrer un cluster MongoDB existant vers la nouvelle architecture veuillez suivre la procédure [Migration](./docs/deploy/migration.md).
 
+### Mise à jour majeure (upgrade en place)
+
+Pour monter en version majeure un cluster existant sans changer d'architecture, veuillez suivre la procédure [Upgrade](./docs/deploy/upgrade.md).
+
 ### Backup et restauration
 
 Consulter les documentations dédiées à la [sauvegarde](./docs/backup/backup.md) et à la [restauration](./docs/backup/restore.md) des données.
@@ -66,7 +70,7 @@ Consulter les documentations dédiées à la [sauvegarde](./docs/backup/backup.m
 Pour supprimer un noeud veuillez:
 
 - Supprimer l'adresse du noeud dans l'enregistrement DNS `SRV` sur alwaysdata.
-- Supprimer le noeud du cluster MongoDB via la commande `.bin/mna deploy:remove:node <environnement>-<n>`
+- Supprimer le noeud du cluster MongoDB via la commande `.bin/mna app:deploy:cluster:node:remove <environnement>-<n>`
 - Décommissionner le serveur et le volume externe associé.
 - Supprimer la référence du serveur dans le fichier ini de ce dépôt ainsi que celui du dépôt infra.
 - Supprimer le noeud de [Percona](https://percona.apprentissage.beta.gouv.fr)

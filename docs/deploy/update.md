@@ -15,5 +15,5 @@ Lancer l'action `Mise à jour d'un Cluster` en spécifiant le nom du cluster à 
 Pour mettre à jour un noeud existant, il suffit de lancer la commande suivante :
 
 ```bash
-.bin/mna deploy:update:node <environnement>-<n>
+.bin/mna app:deploy:cluster:node:update <environnement>_<n>
 ```

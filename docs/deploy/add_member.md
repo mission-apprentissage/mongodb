@@ -8,7 +8,7 @@ Veuillez suivre la procédure sur [Création d'une instance et d'un volume exter
 
 ## Installation du serveur
 
-Veuillez lancer la commande `.bin/mna deploy:extra:node <environnement>_<n>` pour déployer le serveur.
+Veuillez lancer la commande `.bin/mna app:deploy:cluster:node:add <environnement>_<n>` pour déployer le serveur.
 
 ## Vérification de l'installation
 
