@@ -6,14 +6,14 @@ net:
     # Certificat serveur signé par la CA publique (présenté aux clients)
     certificateKeyFile: /mnt/data/mongodb.pem
 
-    # CA publique : utilisée pour vérifier les certificats clients
+    # CA publique : utilisée pour vérifier les certificats serveurs
     CAFile: /mnt/data/mongodb-ca.pem
 
-    # CA privée : utilisée pour vérifier les certificats des pairs
-    clusterCAFile: /mnt/data/mongodb-cluster-ca.pem
-
-    # Certificat membre signé par la CA privée (présenté aux pairs du cluster)
+    # Certificat client signé par la CA privée (présenté aux nœuds de la grappe)
     clusterFile: /mnt/data/mongodb-cluster.pem
+
+    # CA privée : utilisée pour vérifier les certificats clients
+    clusterCAFile: /mnt/data/mongodb-cluster-ca.pem
 
     disabledProtocols: TLS1_0,TLS1_1
     allowConnectionsWithoutCertificates: true
