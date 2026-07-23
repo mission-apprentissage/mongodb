@@ -45,7 +45,7 @@ Avec:
 
 ### Déploiement
 
-1. Lancer le déploiement `.bin/mna deploy:initial:node <environnement>_<n>`
+1. Lancer le déploiement `.bin/mna app:deploy:initial:node <environnement>_<n>`
 2. Redémarrer le serveur pour appliquer tous les changements
 
 ### Enregistrement DNS SRV

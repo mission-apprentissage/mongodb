@@ -51,7 +51,7 @@ _local_app_deploy_cluster_node_update__help="Update cluster"
 _register "app:deploy:cluster:node:update" "_local_app_deploy_cluster_node_update"
 
 function _local_app_deploy_cluster_node_update() {
-  "${scripts_dir}/app-deploy-cluster-node-update.sh" "$@"
+  "${SCRIPTS_DIR}/app-deploy-cluster-node-update.sh" "$@"
 }
 
 _local_app_deploy_cluster_node_add__help="Add node to existing cluster"
