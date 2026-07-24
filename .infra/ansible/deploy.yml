@@ -52,7 +52,11 @@
     - name: "Configuration des utilisateurs"
       include_tasks: ./tasks/create_users.yml
       when: context == "new-cluster" or context == "update"
-    
+
+    - name: "Installation de mongot"
+      include_tasks: ./tasks/install_mongot.yml
+      when: mongot_enable | default(false) | bool
+
     - name: "Configuration de la sauvegarde de la base de données"
       import_tasks: ./tasks/configure-mongodb-backup.yml
       when: backup_enable | default(false) | bool
@@ -83,6 +87,12 @@
     - name: Restart THP
       ansible.builtin.service:
         name: disable-transparent-huge-pages
+        state: restarted
+        enabled: yes
+
+    - name: Restart mongot
+      ansible.builtin.service:
+        name: mongot
         state: restarted
         enabled: yes
 

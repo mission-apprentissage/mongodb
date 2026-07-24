@@ -57,3 +57,32 @@
       roles:
         - role: "any"
           db: 'admin'
+
+- name: "Check mongod version (requis >= 8.2 pour le rôle searchCoordinator)"
+  ansible.builtin.shell:
+    cmd: "/opt/app/scripts/mongo.sh --quiet --eval 'db.version()'"
+  register: mongot_mongod_version
+  changed_when: false
+  when: mongot_enable | default(false) | bool
+
+- name: "Vérifier que mongod >= 8.2 avant de créer mongotUser"
+  ansible.builtin.assert:
+    that:
+      - mongot_mongod_version.stdout | trim is version('8.2', '>=')
+    fail_msg: >-
+      mongod {{ mongot_mongod_version.stdout | trim }} détecté sur ce nœud, mais le rôle
+      searchCoordinator nécessite mongod >= 8.2. Terminez le rollout de l'upgrade (voir
+      docs/deploy/upgrade.md) avant de déployer mongot sur ce nœud.
+  when: mongot_enable | default(false) | bool
+
+- name: "Create mongot user"
+  include_tasks: create_user.yml
+  when: mongot_enable | default(false) | bool
+  vars:
+    user:
+      name: "mongotUser"
+      password: "{{ mongot }}"
+      database: "admin"
+      roles:
+        - role: "searchCoordinator"
+          db: 'admin'

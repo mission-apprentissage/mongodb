@@ -1,0 +1,25 @@
+[Unit]
+Description=MongoDB Search (mongot)
+Documentation=https://www.mongodb.com/docs/manual/core/search-in-community/
+After=network-online.target mongod.service
+Wants=network-online.target
+Requires=mongod.service
+
+[Service]
+User=mongodb
+Group=mongodb
+Restart=on-failure
+RestartSec=10
+StartLimitBurst=4
+StartLimitIntervalSec=120
+
+# À ajuster selon la RAM réelle du nœud (vérifier `free -h` avant rollout prod) — 2g par défaut,
+# valeur validée en preview pour le catalogue LBA (~370k docs / 1 index).
+Environment="JAVA_TOOL_OPTIONS=-Xmx2g"
+
+ExecStart=/opt/mongot/mongot --config /etc/mongot.conf
+LimitNOFILE=64000
+LimitNPROC=64000
+
+[Install]
+WantedBy=multi-user.target

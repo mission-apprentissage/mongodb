@@ -1,0 +1,73 @@
+---
+- name: "Download mongot 'x86_64'"
+  get_url:
+    url: "https://downloads.mongodb.org/mongodb-search-community/{{ mongot_version }}/mongot_community_{{ mongot_version }}_linux_x86_64.tgz"
+    dest: "/tmp/mongot-{{ mongot_version }}.tgz"
+
+- name: "Create mongot system directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+    owner: mongodb
+    group: mongodb
+  loop:
+    - /opt/mongot
+    - /mnt/data/mongot
+    - /var/log/mongot
+    - /etc/mongot/secrets
+
+- name: "mongot user password file"
+  ansible.builtin.copy:
+    content: "{{ mongot }}"
+    dest: /etc/mongot/secrets/passwordFile
+    mode: "0600"
+    owner: mongodb
+    group: mongodb
+  notify:
+    - Restart mongot
+
+- name: "Extract mongot archive"
+  ansible.builtin.unarchive:
+    src: "/tmp/mongot-{{ mongot_version }}.tgz"
+    dest: /opt/mongot
+    remote_src: yes
+    extra_opts:
+      - --strip-components=1
+    owner: mongodb
+    group: mongodb
+
+- name: "mongot configuration file"
+  ansible.builtin.template:
+    src: "{{ inventory_dir }}/../files/configs/mongot/mongot.conf.jinja2"
+    dest: /etc/mongot.conf
+    mode: "0600"
+    owner: mongodb
+  notify:
+    - Restart mongot
+
+- name: "Add the local resolution of the FQDN for the mongot syncSource channel"
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1\s+{{ dns_name }}(\s|$)'
+    line: "127.0.0.1 {{ dns_name }}"
+    state: present
+    backup: true
+  become: true
+
+- name: "mongot service configuration"
+  ansible.builtin.copy:
+    src: "{{ inventory_dir }}/../files/configs/mongot/mongot.service"
+    dest: /etc/systemd/system/mongot.service
+    mode: "0644"
+    owner: root
+  notify:
+    - Reload Daemon
+    - Restart mongot
+
+- name: "Enable and start mongot"
+  ansible.builtin.systemd_service:
+    name: mongot
+    enabled: yes
+    state: started
+    daemon_reload: yes
