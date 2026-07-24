@@ -17,7 +17,7 @@ StartLimitIntervalSec=120
 # valeur validée en preview pour le catalogue LBA (~370k docs / 1 index).
 Environment="JAVA_TOOL_OPTIONS=-Xmx2g"
 
-ExecStart=/opt/mongot/bin/mongot --config /etc/mongot.conf.yml
+ExecStart=/opt/mongot/mongot --config /etc/mongot.conf
 LimitNOFILE=64000
 LimitNPROC=64000
 

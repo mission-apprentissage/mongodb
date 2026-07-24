@@ -3,6 +3,7 @@ Description=MongoDB Database Server
 Documentation=https://docs.mongodb.org/manual
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=120
 
 [Service]
 User=mongodb
@@ -11,7 +12,6 @@ EnvironmentFile=-/etc/default/mongod
 Restart=on-failure
 RestartSec=10
 StartLimitBurst=4
-StartLimitIntervalSec=120
 
 Environment="MONGODB_CONFIG_OVERRIDE_NOFORK=1"
 # https://www.mongodb.com/docs/manual/administration/production-notes/#configuring-numa-on-linux

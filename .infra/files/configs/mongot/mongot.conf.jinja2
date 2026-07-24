@@ -1,0 +1,28 @@
+syncSource:
+  replicaSet:
+    hostAndPort: "{{ dns_name }}:27017"
+    scramAuth:
+      username: mongotUser
+      authSource: admin
+      passwordFile: /etc/mongot/secrets/passwordFile
+      tls:
+        enabled: true
+        caFile: /mnt/data/mongodb-ca.pem
+  replicationReader:
+    readPreference: primaryPreferred
+
+storage:
+  dataPath: /mnt/data/mongot
+
+server:
+  grpc:
+    address: "127.0.0.1:27028"
+    tls:
+      mode: DISABLED
+
+metrics:
+  enabled: true
+  address: "0.0.0.0:9946"
+
+healthCheck:
+  address: "127.0.0.1:8080"

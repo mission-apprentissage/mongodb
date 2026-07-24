@@ -11,28 +11,11 @@ en tant que service systemd séparé sur le même hôte et se synchronise via un
 
 ## Pré-requis avant déploiement
 
-1. **Récupérer le lien de téléchargement mongot** : le site officiel
-   (<https://www.mongodb.com/try/download/search-in-community>) génère un lien de téléchargement
-   dynamique (bouton `Copy link`) pour la version `1.70.1`, plateforme `linux (x86_64)`, package
-   `tgz`. Ce lien n'est pas prévisible/stable par script — le récupérer manuellement sur la page.
-2. Décommenter et renseigner dans `.infra/inventories/env.ini`, sous les groupes `recette_1`,
-   `lba_1`, `lba_2`, `lba_3` :
-   ```ini
-   mongot_enable=true
-   mongot_download_url=<lien copié>
-   mongot_checksum=<sha256 du tgz, optionnel mais recommandé>
-   ```
-   `mongot_enable` reste commenté par défaut : le décommenter uniquement au moment du rollout réel
-   (pas au merge de la PR), sinon tout déploiement courant sur ce nœud échoue tant que
-   `mongot_download_url` n'est pas renseigné. Sans cette dernière variable, la tâche
-   `install_mongot.yml` échoue explicitement (assertion dédiée) au lieu de tenter une URL devinée.
-   Le sha256 du tgz est affiché sur la même page de téléchargement ; si renseigné, il est vérifié
-   automatiquement lors du téléchargement.
-3. Vérifier l'espace disque disponible sur le volume `/mnt/data` de chaque nœud (`df -h`) : les
+1. Vérifier l'espace disque disponible sur le volume `/mnt/data` de chaque nœud (`df -h`) : les
    données Lucene de mongot (`/mnt/data/mongot`) s'ajoutent aux données mongod déjà présentes.
    Non codifié dans ce repo (provisioning OVH manuel, voir [instance.md](./instance.md)) — à
    vérifier nœud par nœud.
-4. Vérifier la RAM disponible (`free -h`) pour valider le `-Xmx 2g` par défaut (`mongot.service`,
+2. Vérifier la RAM disponible (`free -h`) pour valider le `-Xmx 2g` par défaut (`mongot.service`,
    valeur reprise de la configuration preview validée pour le catalogue LBA ~370k docs/1 index).
    Ajuster `JAVA_TOOL_OPTIONS` dans `.infra/files/configs/mongot/mongot.service` si nécessaire.
 
@@ -50,17 +33,6 @@ en tant que service systemd séparé sur le même hôte et se synchronise via un
 - Téléchargement + extraction du binaire mongot dans `/opt/mongot`, données dans
   `/mnt/data/mongot` (hors `/mnt/data/db`, donc hors backup logique `mongodump` existant).
 - Service systemd `mongot` dépendant de `mongod.service` (`Requires=`, `After=`).
-
-## Point d'attention TLS non entièrement vérifié
-
-`net.tls.mode: requireTLS` est actif sur mongod (toutes connexions, y compris loopback) : la
-connexion **syncSource** de mongot vers mongod (`127.0.0.1:27017`, mongot agissant comme client)
-doit donc passer par TLS — `mongot.conf.yml.jinja2` active `scramAuth.tls.enabled: true` et réutilise
-la CA publique du cluster. Le certificat serveur mongod est cependant émis pour `{{ dns_name }}`,
-pas pour `127.0.0.1` : la vérification du hostname échouera telle quelle tant que ce point n'est
-pas confirmé/ajusté contre le comportement réel du binaire 1.70.1 (option de type
-`tlsAllowInvalidHostnames` côté `syncSource.replicaSet.tls`, ou contournement par résolution DNS
-locale). **À valider en recette avant tout rollout prod** — voir la section Vérification.
 
 ## Ordre de rollout recommandé
 
