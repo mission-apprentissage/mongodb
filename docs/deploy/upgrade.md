@@ -24,13 +24,6 @@ cluster. Pour une migration vers une nouvelle architecture de cluster, voir plut
    sous les groupes `[<environnement>_<n>:vars]` des nœuds à mettre à jour. Ne jamais poser cette
    variable en `[all:vars]` : `install_mongodb.yml` est partagé par tous les clusters, un cluster
    sans `mongodb_version` défini reste sur `8.0` par défaut.
-4. Vérifier si la clé OpenPGP de signature a changé d'epoch (`https://www.mongodb.org/static/pgp/server-<epoch>.asc`,
-   par ex. `curl -sIL` doit renvoyer `200`). MongoDB ne republie pas de nouvelle clé à chaque version
-   mineure : la clé `8.0` signe l'ensemble de la série `8.x` (vérifié le 14/07/2026 : `server-8.1.asc`
-   et `server-8.2.asc` renvoient `404`, seule `server-8.0.asc` existe). Si l'epoch n'a pas changé,
-   **ne pas** définir `mongodb_pgp_key_epoch` (reste par défaut sur `8.0`) — seul `mongodb_version`
-   doit changer. Si une montée de version future change réellement d'epoch de clé (ex. passage à une
-   `9.0`), définir `mongodb_pgp_key_epoch=9.0` en plus de `mongodb_version=9.0`.
 
 > [!NOTE]
 > Le module `apt_repository` ajoute un nouveau fichier de dépôt pour chaque canal mais ne retire pas
