@@ -15,7 +15,7 @@ cluster. Pour une migration vers une nouvelle architecture de cluster, voir plut
 
 1. Vérifier la version binaire actuelle et la FCV courante sur un membre du cluster :
    ```bash
-   /opt/app/scripts/mongo.sh --eval 'db.version()'
+   /opt/app/scripts/mongo_local.sh --eval 'db.version()'
    /opt/app/scripts/mongo.sh --eval 'db.adminCommand({getParameter: 1, featureCompatibilityVersion: 1})'
    ```
 2. Vérifier la compatibilité des drivers applicatifs avec la version cible (voir la
