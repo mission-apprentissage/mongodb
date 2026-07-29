@@ -60,7 +60,7 @@
 
 - name: "Check mongod version (requis >= 8.2 pour le rôle searchCoordinator)"
   ansible.builtin.shell:
-    cmd: "/opt/app/scripts/mongo.sh --quiet --eval 'db.version()'"
+    cmd: "/opt/app/scripts/mongo_local.sh --quiet --eval 'db.version()'"
   register: mongot_mongod_version
   changed_when: false
   when: mongot_enable | default(false) | bool
