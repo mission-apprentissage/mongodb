@@ -1,5 +1,22 @@
 ---
 
-- name: "Initialisation du replicat set"
-  shell:
-    cmd: '/opt/app/scripts/mongo_local.sh < /opt/app/configs/mongodb/init_rs.js'
+- name: "Appliquer les changements de configuration en attente"
+  ansible.builtin.meta: flush_handlers
+
+- name: "Vérifier si la grappe est déjà initialisée"
+  ansible.builtin.shell:
+    cmd: "/opt/app/scripts/mongo_local.sh --quiet --eval 'print(rs.status().ok)'"
+  register: rs_check
+  changed_when: false
+  failed_when: false
+
+- name: "Initialisation du replica set"
+  ansible.builtin.shell:
+    cmd: '/opt/app/scripts/mongo_bootstrap.sh /opt/app/configs/mongodb/init_rs.js'
+  when: rs_check.rc != 0
+
+- name: "Création de l'utilisateur root"
+  ansible.builtin.shell:
+    cmd: '/opt/app/scripts/mongo_bootstrap.sh /opt/app/configs/mongodb/create_root_user.js'
+  when: rs_check.rc != 0
+

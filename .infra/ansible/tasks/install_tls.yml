@@ -1,4 +1,5 @@
 ---
+
 - name: "Update MongoDB X.509 certificate"
   shell:
     cmd: '/opt/app/scripts/update_cert.sh'

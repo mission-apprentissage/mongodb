@@ -1,16 +1,18 @@
 // This script is used to initialze a brand new replica set
-try {   
+try {
     rs.status().ok
-} catch (e) { 
-    if (e.code === 94) {
-        rs.initiate();
-        while(rs.status().myState !== 1) {
+} catch (e) {
+    if (e.code === 94) { // NotYetInitialized
+        rs.initiate({
+            _id: "rs-{{ env_type }}",
+            members: [
+                { _id: 0, host: "{{ dns_name }}:27017", priority: 5 }
+            ]
+				});
+        while (rs.status().myState !== 1) {
             print('Waiting for replica set initialization...');
             sleep(1000);
         }
-        cfg = rs.conf();
-        cfg.members[0].priority = 5;
-        rs.reconfig(cfg);
     } else {
         throw e;
     }

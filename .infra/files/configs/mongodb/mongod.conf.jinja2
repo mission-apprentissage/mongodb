@@ -40,12 +40,15 @@ storage:
   dbPath: /mnt/data/db
   directoryPerDB: true
   oplogMinRetentionHours: 168
-{% if mongot_enable | default(false) | bool %}
 
+replication:
+  replSetName: rs-{{ env_type }}
+
+{% if mongot_enable | default(false) | bool %}
 setParameter:
   mongotHost: "127.0.0.1:27028"
   searchIndexManagementHostAndPort: "127.0.0.1:27028"
   searchTLSMode: disabled
   skipAuthenticationToSearchIndexManagementServer: false
-  useGrpcForSearch: true
+  useGrpcForSearch: tru
 {% endif %}

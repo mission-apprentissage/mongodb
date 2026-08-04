@@ -1,7 +1,14 @@
 ---
+
 - name: 'Configure Percona repository'
   apt:
     deb: https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+
+- name: 'Enable pmm2-client repository'
+  ansible.builtin.command: percona-release enable pmm2-client
+  register: percona_enable
+  changed_when: "'already enabled' not in percona_enable.stdout"
+  failed_when: percona_enable.rc != 0
 
 - name: 'Install pmm-client'
   apt:
@@ -17,7 +24,7 @@
 
 - name: "Register PMM client"
   ansible.builtin.shell:
-    cmd: "pmm-admin config --server-insecure-tls --server-url \"https://admin:{{PERCONA_PASSWORD }}@percona.apprentissage.beta.gouv.fr:444\" --force"
+    cmd: "pmm-admin config --server-insecure-tls --server-url \"https://admin:{{ PERCONA_PASSWORD }}@percona.apprentissage.beta.gouv.fr:444\" --force"
   when: pmm_status.rc != 0
 
 - name: "Check installed PMM client services"
@@ -27,5 +34,5 @@
 
 - name: "Register MongoDB service"
   ansible.builtin.shell:
-    cmd: "pmm-admin add mongodb --username pmm --password \"{{ pmm }}\" --cluster {{env_type}} --tls {{host_name}} {{dns_name}}:27017"
+    cmd: "pmm-admin add mongodb --username pmm --password \"{{ pmm }}\" --cluster {{ env_type }} --tls {{ host_name }} {{ dns_name }}:27017"
   when: pmm_services.stdout.find('mongodb_exporter') == -1

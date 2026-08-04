@@ -1,4 +1,5 @@
 ---
+
 - name: "Create mount directory"
   ansible.builtin.file:
     path: "/mnt/data"
