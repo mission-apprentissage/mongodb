@@ -15,7 +15,9 @@ StartLimitIntervalSec=120
 
 # À ajuster selon la RAM réelle du nœud (vérifier `free -h` avant rollout prod) — 2g par défaut,
 # valeur validée en preview pour le catalogue LBA (~370k docs / 1 index).
-Environment="JAVA_TOOL_OPTIONS=-Xmx2g"
+# -XX:-UseBASE64Intrinsics : atténuation Java4Shell (CVE-2026-114938),
+# à retirer quand le JDK embarqué par mongot sera corrigé.
+Environment="JAVA_TOOL_OPTIONS=-Xmx2g -XX:-UseBASE64Intrinsics"
 
 ExecStart=/opt/mongot/mongot --config /etc/mongot.conf
 LimitNOFILE=64000
