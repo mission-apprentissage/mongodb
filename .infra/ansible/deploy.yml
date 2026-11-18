@@ -70,28 +70,33 @@
 
   handlers:
     - name: "Mise à jour de la configuration Systemd"
+      listen: reload-daemon
       ansible.builtin.systemd_service:
         daemon_reload: true
 
     - name: "Redémarrage du service MongoDB"
+      listen: restart-mongodb
       ansible.builtin.service:
         name: mongod
         state: restarted
         enabled: yes
 
     - name: "Redémarrage du service MongoDB Search"
+      listen: restart-mongot
       ansible.builtin.service:
         name: mongot
         state: restarted
         enabled: yes
 
     - name: "Redémarrage du service THP"
+      listen: restart-thp
       ansible.builtin.service:
         name: disable-transparent-huge-pages
         state: restarted
         enabled: yes
 
     - name: "Redémarrage du service logrotate"
+      listen: restart-logrotate
       ansible.builtin.service:
         name: logrotate
         enabled: true

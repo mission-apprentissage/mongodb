@@ -19,7 +19,8 @@
         cmd: "/opt/app/scripts/remove_member.sh"
 
   handlers:
-    - name: Restart MongoDB
+    - name: "Redémarrage du service MongoDB"
+      listen: restart-mongodb
       ansible.builtin.service:
         name: mongod
         state: restarted

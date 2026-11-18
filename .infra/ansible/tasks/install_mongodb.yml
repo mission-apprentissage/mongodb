@@ -47,8 +47,8 @@
     mode: "0644"
     owner: root
   notify:
-    - Reload Daemon
-    - Restart MongoDB
+    - reload-daemon
+    - restart-mongodb
 
 - name: "Disable Transparent Huge Pages (THP)"
   ansible.builtin.copy:
@@ -57,5 +57,5 @@
     mode: "0644"
     owner: root
   notify:
-    - Reload Daemon
-    - Restart THP
+    - reload-daemon
+    - restart-thp
