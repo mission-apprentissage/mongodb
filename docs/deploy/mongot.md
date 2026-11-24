@@ -23,7 +23,7 @@ en tant que service systemd séparé sur le même hôte et se synchronise via un
 
 - Scope strict via `mongot_enable=true` (uniquement recette/lba) : `create_users.yml`,
   `mongod.conf.step-1/2.jinja2` et l'inclusion de `install_mongot.yml` dans `deploy.yml` sont tous
-  gardés par cette variable — aucun effet sur les autres clusters (bal/api/tdb/sandbox).
+  gardés par cette variable — aucun effet sur les autres clusters (bal/api/tdb).
 - Création de `mongotUser` (rôle builtin `searchCoordinator`/`admin`) via le mécanisme SOPS/
   `create_user.yml` existant.
 - `setParameter` côté mongod : `mongotHost`/`searchIndexManagementHostAndPort` pointent vers
