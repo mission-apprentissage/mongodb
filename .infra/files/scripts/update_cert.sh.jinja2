@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+{% if certbot | default(true) | bool %}
 ###########################################################################
 # Autorité de certification publique
 
@@ -47,3 +48,104 @@ chown mongodb:mongodb /mnt/data/mongodb-cluster.pem
 cat /opt/app/pki/mongodb-cluster-ca-chain.pem /opt/app/pki/ca/root-ca.pem > /mnt/data/mongodb-cluster-ca.pem
 chmod 644 /mnt/data/mongodb-cluster-ca.pem
 chown mongodb:mongodb /mnt/data/mongodb-cluster-ca.pem
+{% else %}
+###########################################################################
+# Certificats déposés par le serveur pki dans /opt/app/x509/<fqdn>/
+
+readonly X509=/opt/app/x509
+readonly SERVER_DIR="${X509}/{{ dns_name }}"
+readonly MEMBER_DIR="${X509}/rs.{{ host_dns_name }}"
+readonly CA_INTERNAL="${X509}/ca-internal.pem"
+readonly SYSTEM_CA_DIR=/etc/ssl/certs
+readonly MEMBER_EXT="{{ cluster_auth_value | default('rs-' ~ env_type) }}"
+readonly DATA=/mnt/data
+
+TMP=$(mktemp -d)
+trap 'rm -rf "${TMP}"' EXIT
+
+fail() {
+  echo "$*" >&2
+  exit 1
+}
+
+checkPair() {
+  local -r dir=$1
+  local c k
+  c=$(openssl x509 -noout -pubkey -in "${dir}/cert.pem" | sha256sum)
+  k=$(openssl pkey -pubout -in "${dir}/privkey.pem" | sha256sum)
+  [ "${c}" = "${k}" ] || fail "${dir} : clé et certificat incohérents"
+  openssl x509 -noout -checkend 0 -in "${dir}/cert.pem" > /dev/null \
+    || fail "${dir} : certificat expiré"
+}
+
+# Racine publique : retrouvée dans le magasin système à partir de l'émetteur
+# du dernier certificat de chain.pem (pas de racine fixée en dur).
+findPublicRoot() {
+  local -r chain=$1
+  local hash
+  awk '/-----BEGIN CERTIFICATE-----/ { buf = "" } { buf = buf $0 "\n" } END { printf "%s", buf }' \
+    "${chain}" > "${TMP}/last.pem"
+  hash=$(openssl x509 -noout -issuer_hash -in "${TMP}/last.pem")
+  for root in "${SYSTEM_CA_DIR}/${hash}".*; do
+    [ -f "${root}" ] || continue
+    if openssl verify -CAfile "${root}" -untrusted "${chain}" "${SERVER_DIR}/cert.pem" > /dev/null 2>&1; then
+      echo "${root}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+install0() {
+  local -r mode=$1
+  local -r src=$2
+  local -r dest=$3
+  install -o mongodb -g mongodb -m "${mode}" "${src}" "${dest}.new"
+  mv -f "${dest}.new" "${dest}"
+}
+
+# --- contrôles, avant toute écriture dans /mnt/data -----------------------
+
+for d in "${SERVER_DIR}" "${MEMBER_DIR}"; do
+  for f in cert.pem privkey.pem chain.pem fullchain.pem; do
+    [ -f "${d}/${f}" ] || fail "fichier absent : ${d}/${f}"
+  done
+  checkPair "${d}"
+done
+
+[ -f "${CA_INTERNAL}" ] || fail "fichier absent : ${CA_INTERNAL}"
+
+PUBLIC_ROOT=$(findPublicRoot "${SERVER_DIR}/chain.pem") \
+  || fail "racine publique introuvable dans ${SYSTEM_CA_DIR}"
+
+openssl verify -CAfile "${CA_INTERNAL}" -untrusted "${MEMBER_DIR}/chain.pem" \
+  "${MEMBER_DIR}/cert.pem" > /dev/null \
+  || fail "certificat de membre non reconnu par ${CA_INTERNAL}"
+
+# extension clusterAuthX509 : UTF8String (0x0C) de la valeur attendue
+# longueur via wc : la syntaxe bash de longueur ouvre un commentaire Jinja
+len=$(printf '%s' "${MEMBER_EXT}" | wc -c)
+expected=$(printf '%s' "${MEMBER_EXT}" | od -An -tx1 | tr -d ' \n' | tr 'a-f' 'A-F')
+expected=$(printf '0C%02X%s' "${len}" "${expected}")
+openssl asn1parse -in "${MEMBER_DIR}/cert.pem" \
+  | grep -A1 ':1.3.6.1.4.1.34601.2.1.2$' | grep -q "HEX DUMP\]:${expected}$" \
+  || fail "extension ${MEMBER_EXT} absente du certificat de membre"
+
+# --- assemblage dans un répertoire temporaire, puis remplacement ----------
+
+# certificateKeyFile : certificat Let's Encrypt présenté aux clients
+cat "${SERVER_DIR}/privkey.pem" "${SERVER_DIR}/fullchain.pem" > "${TMP}/mongodb.pem"
+
+# CAFile : chaîne et racine publiques, valident le certificat serveur des pairs
+cat "${SERVER_DIR}/chain.pem" "${PUBLIC_ROOT}" > "${TMP}/mongodb-ca.pem"
+
+# clusterFile : certificat de membre et intermédiaire pki
+cat "${MEMBER_DIR}/privkey.pem" "${MEMBER_DIR}/fullchain.pem" > "${TMP}/mongodb-cluster.pem"
+
+install0 600 "${TMP}/mongodb.pem" "${DATA}/mongodb.pem"
+install0 644 "${TMP}/mongodb-ca.pem" "${DATA}/mongodb-ca.pem"
+install0 600 "${TMP}/mongodb-cluster.pem" "${DATA}/mongodb-cluster.pem"
+
+# clusterCAFile : racine pki seule (l'intermédiaire est envoyé par le pair)
+install0 644 "${CA_INTERNAL}" "${DATA}/mongodb-cluster-ca.pem"
+{% endif %}
