@@ -10,4 +10,6 @@
     minute: "0"
     hour: "4"
     job: "bash /opt/app/scripts/rotate_cert.sh >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'MongoDB Rotate Cert' -v $?"
+  # avec pki, la rotation est declenchee par le hook /opt/app/x509-hooks/hook
+  when: certbot | default(true) | bool
 
