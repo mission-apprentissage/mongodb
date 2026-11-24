@@ -28,6 +28,7 @@
 
     - name: "Installation d'une autorité de certification X.509 intermédiaire"
       include_tasks: ./tasks/install_ca.yml
+      when: certbot | default(true) | bool
 
     - name: "Installation des certificats X.509 pour MongoDB"
       include_tasks: ./tasks/install_tls.yml
@@ -58,6 +59,7 @@
 
     - name: "Installation de l'agent Percona"
       include_tasks: ./tasks/percona.yml
+      when: percona_enable | default(true) | bool
 
     - name: "Vérification de la nécessité d'un redémarrage du serveur"
       stat:

@@ -1,5 +1,9 @@
 net:
+{% if private | default(false) | bool %}
+  bindIp: 127.0.0.1,{{ private_ip }}
+{% else %}
   bindIpAll: true
+{% endif %}
   tls:
     mode: requireTLS
 
@@ -19,7 +23,7 @@ net:
     allowConnectionsWithoutCertificates: true
 
     clusterAuthX509:
-      extensionValue: rs-{{ env_type }}
+      extensionValue: {{ cluster_auth_value | default('rs-' ~ env_type) }}
 
 systemLog:
   path: /var/log/mongodb/mongod.log
